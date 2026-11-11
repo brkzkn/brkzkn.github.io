@@ -1,9 +1,10 @@
 ---
+import { showSamples } from '../../lib/posts';
 // gear.html. One markdown file per device in src/content/gear/; counts and sections are computed.
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 
-const all = (await getCollection('gear', (g) => import.meta.env.DEV || !g.data.draft)).map((g) => g);
+const all = (await getCollection('gear', (g) => (import.meta.env.DEV || !g.data.draft) && (showSamples || !g.data.sample))).map((g) => g);
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const monthYear = (s: string) => (/^\d{4}-\d{2}$/.test(s) ? `${MONTHS[+s.slice(5) - 1]} ${s.slice(0, 4)}` : s);
 

@@ -1,6 +1,6 @@
 # burakozkan.net — personal site
 
-Personal website and self-hosted "social media" for Burak Özkan, Technical Architect in Istanbul.
+Personal website and self-hosted "social media" for Burak Özkan, Director of Engineering and (in practice) Technical Architect in Istanbul.
 Central idea, used verbatim in the hero: *"A personal space for the systems I design, the things I build, and the life I want to remember."*
 
 This repo currently holds a **static HTML prototype** (`prototype/`) that is design-complete for 13 pages. The next phase is migrating it to **Astro** with Markdown content and deploying to **GitHub Pages** on the custom domain `burakozkan.net`. Read `docs/roadmap.md` before starting migration work.
@@ -71,7 +71,7 @@ Thoughtful, clear, personal, technically credible, calm. No marketing language: 
 
 ## Owner context that matters
 
-- 15+ years in software, 8 as an architect; .NET, Kafka, PostgreSQL, Kubernetes. Comfortable with code; do not over-explain.
+- 14+ years in software (since 2012), 8 as an architect; .NET, Azure, AWS, PostgreSQL/SQL Server, Kubernetes. CV-verified career rows live on the About page. Comfortable with code; do not over-explain.
 - Comfortable in Turkish and English; will often write prompts in Turkish. Reply in the language he uses.
 - Had a WordPress blog that went silent for 4–5 years; he closed it. Low-friction publishing is the whole point of this project.
 - Active elsewhere on LinkedIn, Instagram and GitHub; those are the only social links to show (GitHub added 2026-11-04 at the owner's request).

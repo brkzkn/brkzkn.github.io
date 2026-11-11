@@ -795,3 +795,16 @@ h2[id]{scroll-margin-top:96px}
   .nav nav ul{justify-content:flex-end}
   .site-preferences{margin-left:0}
 }
+
+/* 2026-11-11: About intro is two paragraphs now; a step smaller than the one-line .lede so it reads as prose. */
+.about-lede{font-size:20px;line-height:1.5}
+@media(max-width:1000px){.about-lede{font-size:18px}}
+
+/* 2026-11-11: About headline is a sentence, not a display line; one step below .h1 at every breakpoint. */
+.about-h1{font-size:52px;line-height:1.08}
+@media(max-width:1000px){.about-h1{font-size:40px}}
+@media(max-width:640px){.about-h1{font-size:32px}}
+
+/* 2026-11-11: real portrait on About (square source), replaces the 3:4 hatched placeholder. */
+.about-portrait{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:4px}
+@media(max-width:1000px){.about-portrait{max-width:320px}}

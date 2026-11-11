@@ -1,0 +1,169 @@
+---
+// About (prototype: profile.html), written in both languages; /about/ and /tr/about/ render it (ADR-006, src/i18n/translated.ts).
+// Career rows follow the owner's CV (2026-11-11); client names stay anonymous, employers are public. The "Away from the keyboard"
+// prose is the `about` / `about.tr` page entry.
+import { getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { site, social } from '../config/site';
+interface Props { lang: 'en' | 'tr' }
+const { lang } = Astro.props;
+const tr = lang === 'tr';
+const linkedin = social('linkedin');
+const github = social('github');
+
+const pages = await getCollection('pages');
+const about = pages.find((e) => e.data.lang === lang && e.id.startsWith('about'));
+if (!about) throw new Error(`pages collection has no About entry for ${lang}; ids: ${pages.map((e) => e.id).join(', ')}`);
+const { Content } = await render(about);
+
+const c = tr
+  ? {
+      title: 'Hakkımda',
+      h1: 'Biraz yazılım, biraz teknoloji ve hayattan biriktirdiğim anlar.',
+      lede: [
+        '14 yılı aşkın süredir yazılımla uğraşıyorum. Umbrage’da (Bain & Company bünyesinde) Director of Engineering olarak çalışıyorum ama teknik detayların içinde olmayı da hâlâ seviyorum. Son 8 yıldır ağırlıklı olarak yazılım mimarisiyle, özellikle Azure, .NET ve dağıtık sistemlerle ilgileniyorum.',
+        'İş dışında akıllı ev sistemleriyle ilgileniyor, 3D yazıcımla yeni şeyler üretmeyi seviyorum. Evde ise bütün bu sistemlerden daha karmaşık ve çok daha eğlenceli ikiz kızlarım var.',
+      ],
+      contact: 'İletişime geç',
+      careerH: 'Kısaca kariyerim',
+      careerP: 'Uzun hâli LinkedIn’de.',
+      rows: [
+        ['Kas 2025’ten beri', 'Director of Engineering, Umbrage (Bain & Company bünyesinde)', 'Müşteri projelerinde teknik liderlik, mimari yönetişim ve teslimat sorumluluğu. Küresel bir tüketim ürünleri şirketi için yapay zekâ destekli finansal planlama platformunda baş mimar: .NET 8, Azure Data Factory ve Synapse, CQRS, Redis, Azure Functions.'],
+        ['2022 – 2025', 'Senior Developer, Umbrage', 'Enerji, sanayi ve operasyon projelerinde backend lideri ve mimari katkı. ABD’li bir enerji operatörünün rota ve pompa optimizasyonu platformları için teknik keşif ve AWS/NestJS mimarisi; SQS üzerinde olay güdümlü bildirimler.'],
+        ['2021 – 2022', 'Technical Lead / Architect, Nudge Digital', 'İş analistleri ve servis tasarımcılarıyla birlikte çalışan bir ekipte mimari doğrulama ve teknik yön. Günlük takip, iş dağılımı ve gerektiğinde elim kodda.'],
+        ['2018 – 2021', 'Technical Architect, Accenture', 'Enerji, üretim ve finans sektöründeki kurumsal müşteriler için bulut ve on-premise mimari teklifleri. Monolitten mikroservise geçişler; 50’den fazla mühendisin Azure ortamının yönetimi; mimari üzerine altı haftalık bir iç eğitim serisi.'],
+        ['2017 – 2018', 'Senior Software Developer, Accenture', 'Beş kişilik ekiple Azure üzerinde .NET Core REST API (Key Vault, Service Bus, SignalR, Data Factory). CI/CD’de %85 kapsama eşiği. Türkiye, İrlanda, Almanya ve ABD’deki inovasyon merkezleri için IoT prototipleri; AWS Lambda üzerinde bir Alexa becerisi.'],
+        ['2016 – 2017', 'Kurucu ortak ve Senior Software Developer, 21st Solutions', 'Dört kişilik ekibi fikirden Azure SQL üzerinde çok katmanlı bir C# REST API’ye taşıdım. SQS ve Marketplace Web Service ile gerçek zamanlı bir Amazon fiyatlandırma uygulaması çıkardık.'],
+        ['2014 – 2016', 'Senior Software Developer Consultant, KoçSistem', 'Büyük bir kurumun fiziksel defter kayıtlarının dijitale taşınması; bir duty-free operatörünün özel ERP’si için satın alma, müşteri ve fatura modülleri. Ar-Ge’de 15 kişilik IoT topluluğu ve iç hackathon’lar.'],
+        ['2012 – 2013', 'Software Developer, Sobee', 'Türkiye’nin en büyük oyun stüdyolarından biri için web servisleri, SQL veritabanları ve oyun sunucusu bileşenleri; günde 20 binden fazla aktif kullanıcı.'],
+      ],
+      eduLabel: 'Eğitim',
+      eduH: 'Bilgisayar Mühendisliği lisansı, Kadir Has Üniversitesi, 2008 – 2012',
+      eduP: 'Endüstriyel Otomasyon ön lisans, İstanbul Üniversitesi, 2005 – 2007.',
+      focusH: 'Teknik odağım',
+      focusP: 'Neye uzandığım, neye dikkat ettiğim.',
+      focus: [
+        ['Mimari', 'Mikroservisler ve bağlam sınırları, olay güdümlü entegrasyon, okuma tarafı hak ettiğinde CQRS, monolitten strangler ile çıkış. Mühendislerin gerçekten uygulayabileceği bir mimari yönetişim.'],
+        ['Backend', 'C# ve .NET 8, ASP.NET Core, Entity Framework ve Dapper; ekip oradaysa NestJS ve TypeScript. SQL Server, PostgreSQL, Cosmos DB, Redis. Idempotency ve API tasarımı konusunda net fikirlerim var.'],
+        ['Platform', 'Önce Microsoft Azure (AKS, Functions, Service Bus, Data Factory, Synapse, Key Vault), müşteri oradaysa AWS. Docker, Kubernetes, Azure DevOps ve GitHub Actions. Doğru yolu kolay yol yapan standartlar.'],
+        ['Yapay zekâ ile çalışmak', 'Üretimde yapay zekâ destekli planlama platformları; küçük kapsam, inceleme ve testle ajan destekli geliştirme. Küçük bir yerel modelin neyi güvenilir biçimde yapabildiği ilgimi çekiyor.'],
+      ],
+      awayH: 'Klavyeden uzakta',
+      photoWorkshop: 'Fotoğraf: atölye',
+      photoStadium: 'Fotoğraf: stadyum, akşam',
+      portraitAlt: 'Burak Özkan, kollarını kavuşturmuş, gülümsüyor',
+      touchH: 'İletişime geç',
+      email: 'E-posta',
+      emailP: 'Bir cümleden uzun her şey için en iyisi.',
+      liP: 'İş, roller, ara sıra bir paylaşım.',
+      ghP: 'Denemeler ve basılabilir parçalar.',
+      cvH: 'Özgeçmiş',
+      cvP: 'Herkese açık bir sürüm yolda; tam kronoloji LinkedIn’de.',
+      cvBtn: 'LinkedIn’de gör',
+    }
+  : {
+      title: 'About',
+      h1: 'I design systems for work, tinker with tech for fun, and collect moments along the way.',
+      lede: [
+        'I have been working in software for over 14 years. I am Director of Engineering at Umbrage, part of Bain & Company, and I still like being in the technical details. For the last eight years my focus has been software architecture, mostly Azure, .NET and distributed systems.',
+        'Outside work I tinker with smart home systems and like making new things with my 3D printer. At home I have twin daughters, who are more complex than any of those systems and a lot more fun.',
+      ],
+      contact: 'Get in touch',
+      careerH: 'Career, briefly',
+      careerP: 'The long version is on LinkedIn.',
+      rows: [
+        ['Nov 2025 to now', 'Director of Engineering, Umbrage (part of Bain & Company)', 'Technical leadership, architecture governance and delivery oversight across client engagements. Lead architect on an AI-enabled financial planning platform for a global consumer goods company: .NET 8, Azure Data Factory and Synapse, CQRS, Redis, Azure Functions.'],
+        ['2022 to 2025', 'Senior Developer, Umbrage', 'Lead backend developer and architecture contributor on energy, industrial and operations engagements. Technical discovery and AWS/NestJS architecture for a US energy operator’s routing and pump-optimisation platforms; event-driven notifications on SQS.'],
+        ['2021 to 2022', 'Technical Lead / Architect, Nudge Digital', 'Owned architecture validation and technical direction for a cross-functional team, alongside business analysts and service designers. Daily tracking, task assignment and hands-on code when it kept delivery moving.'],
+        ['2018 to 2021', 'Technical Architect, Accenture', 'Architecture proposals across public cloud and on-premise for enterprise clients in energy, manufacturing and financial services. Led monolith-to-microservice migrations; managed the Azure environment for 50+ engineers; ran a six-week internal brown-bag series on enterprise architecture.'],
+        ['2017 to 2018', 'Senior Software Developer, Accenture', 'Led a team of five building a .NET Core REST API on Azure (Key Vault, Service Bus, SignalR, Data Factory). Set an 85% coverage gate in CI/CD. Built IoT proofs of concept for innovation hubs in Turkey, Ireland, Germany and the US; an Alexa skill on AWS Lambda.'],
+        ['2016 to 2017', 'Co-founder and Senior Software Developer, 21st Solutions', 'Led a team of four from idea to a multi-tier REST API in C# on Azure SQL. Shipped a real-time Amazon repricing application on SQS and the Marketplace Web Service.'],
+        ['2014 to 2016', 'Senior Software Developer Consultant, KoçSistem', 'Digitised a large enterprise’s physical ledger records; built purchasing, customer and invoicing modules for a duty-free operator’s custom ERP. Led a 15-person IoT community of practice in R&D, with internal hackathons.'],
+        ['2012 to 2013', 'Software Developer, Sobee', 'Web services, SQL databases and game-server components for one of Turkey’s largest game studios, serving 20K+ daily active users.'],
+      ],
+      eduLabel: 'Education',
+      eduH: 'BEng Computer Engineering, Kadir Has University, 2008 to 2012',
+      eduP: 'Associate degree in Industrial Automation, Istanbul University, 2005 to 2007.',
+      focusH: 'Technical focus',
+      focusP: 'What I reach for, and what I am careful with.',
+      focus: [
+        ['Architecture', 'Microservices and bounded contexts, event-driven integration, CQRS where the read side earns it, strangler migrations off monoliths. Architecture governance that engineers can actually follow.'],
+        ['Backend', 'C# and .NET 8, ASP.NET Core, Entity Framework and Dapper; NestJS and TypeScript when the team is there. SQL Server, PostgreSQL, Cosmos DB, Redis. Strong opinions about idempotency and API design.'],
+        ['Platform', 'Microsoft Azure first (AKS, Functions, Service Bus, Data Factory, Synapse, Key Vault), AWS when the client lives there. Docker, Kubernetes, Azure DevOps and GitHub Actions. Golden paths that make the compliant route the easy one.'],
+        ['Working with AI', 'AI-enabled planning platforms in production; agent-assisted development with small scopes, reviews and tests. Interested in what a small local model can do reliably.'],
+      ],
+      awayH: 'Away from the keyboard',
+      photoWorkshop: 'Photo: workshop',
+      photoStadium: 'Photo: stadium, evening',
+      portraitAlt: 'Burak Özkan, arms crossed, smiling',
+      touchH: 'Get in touch',
+      email: 'Email',
+      emailP: 'Best for anything longer than a sentence.',
+      liP: 'Work, roles, the occasional post.',
+      ghP: 'Experiments and printable parts.',
+      cvH: 'Curriculum vitae',
+      cvP: 'A public version is on the way; LinkedIn has the full timeline.',
+      cvBtn: 'View on LinkedIn',
+    };
+---
+<Base title={c.title} description={about.data.description} originalLang={lang} canonical="/about/" nav="about">
+
+<section class="pagehead about-pagehead">
+  <div class="wrap grid about-hero">
+    <div class="span4"><img class="about-portrait" src="/assets/images/portrait.jpg" alt={c.portraitAlt} width="512" height="512" loading="eager"></div>
+    <div class="about-hero-text about-stack-lg">
+      <h1 class="h1 about-h1">{c.h1}</h1>
+      {c.lede.map((t) => <p class="lede about-lede">{t}</p>)}
+      <div class="row about-actions">
+        <a class="btn primary" href="#contact">{c.contact}</a>
+        {linkedin && <a class="btn" href={linkedin.href} target="_blank" rel="noopener noreferrer">{linkedin.label}</a>}
+        {github && <a class="btn" href={github.href} target="_blank" rel="noopener noreferrer">{github.label}</a>}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section about-rule">
+  <div class="wrap grid">
+    <div class="span4 about-stack"><h2 class="h2">{c.careerH}</h2><p class="small">{c.careerP}</p></div>
+    <div class="span8">
+        {c.rows.map(([y, t, d]) => <div class="cv-row"><div class="tiny">{y}</div><div class="about-stack"><h3 class="h4">{t}</h3><p class="small">{d}</p></div></div>)}
+        <div class="cv-row"><div class="tiny">{c.eduLabel}</div><div class="about-stack"><h3 class="h4">{c.eduH}</h3><p class="small">{c.eduP}</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section about-rule">
+  <div class="wrap grid">
+    <div class="span4 about-stack"><h2 class="h2">{c.focusH}</h2><p class="small">{c.focusP}</p></div>
+    <div class="span8 g2 about-focus">
+      {c.focus.map(([t, d]) => <div class="panel about-stack"><h3 class="h4">{t}</h3><p class="small">{d}</p></div>)}
+    </div>
+  </div>
+</section>
+
+<section class="section about-rule">
+  <div class="wrap grid about-away">
+    <div class="span6 about-stack-lg">
+      <h2 class="h2">{c.awayH}</h2>
+      <div class="prose"><Content /></div>
+    </div>
+    <div class="about-photos">
+      <div class="ph r34 warm photo-placeholder"><span class="cap">{c.photoWorkshop}</span><img src="/assets/images/stock-3d-printer.jpg" alt="" loading="lazy"></div>
+      <div class="ph r34 sage about-stagger"><span class="cap">{c.photoStadium}</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section about-rule">
+  <div class="wrap grid">
+    <div class="span4"><h2 class="h2" id="contact">{c.touchH}</h2></div>
+    <div class="span8 about-contact" id="social-profiles">
+      <div class="panel about-stack"><span class="tiny">{c.email}</span><a class="link about-contact-link" href={`mailto:${site.email}`}>{site.email}</a><span class="small">{c.emailP}</span></div>
+      {linkedin && <div class="panel about-stack"><span class="tiny">LinkedIn</span><a class="link about-contact-link" href={linkedin.href} target="_blank" rel="noopener noreferrer">{linkedin.display}</a><span class="small">{c.liP}</span></div>}
+      {github && <div class="panel about-stack"><span class="tiny">GitHub</span><a class="link about-contact-link" href={github.href} target="_blank" rel="noopener noreferrer">{github.display}</a><span class="small">{c.ghP}</span></div>}
+      {linkedin && <div class="panel tint about-cv"><div class="about-stack"><h3 class="about-cv-title">{c.cvH}</h3><span class="small">{c.cvP}</span></div><a class="btn sm" href={linkedin.href} target="_blank" rel="noopener noreferrer">{c.cvBtn}</a></div>}
+    </div>
+  </div>
+</section>
+</Base>

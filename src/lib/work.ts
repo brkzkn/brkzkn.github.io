@@ -1,5 +1,8 @@
 // Helpers for the work collection (case studies). Rules: docs/content-model.md, ADR-004.
 import { getCollection, type CollectionEntry } from 'astro:content';
+
+/** Sample entries (`sample: true`) are published only while PUBLIC_PREVIEW !== 'false' (docs/roadmap.md, go-live gate). */
+export const showSamples = import.meta.env.PUBLIC_PREVIEW !== 'false';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -9,7 +12,7 @@ export const workUrl = (w: Work) => `/work/${w.id}/`;
 
 /** Published case studies, newest first. Drafts are hidden in production. */
 export async function getWork(): Promise<Work[]> {
-  const all = await getCollection('work', (w) => import.meta.env.DEV || !w.data.draft);
+  const all = await getCollection('work', (w) => (import.meta.env.DEV || !w.data.draft) && (showSamples || !w.data.sample));
   return all.sort((a, b) => +b.data.date - +a.data.date);
 }
 
