@@ -1,11 +1,11 @@
 ---
 title: About
-description: Director of Engineering at Umbrage and Technical Architect in Istanbul. Fourteen-plus years in software, the last eight on architecture; a 3D printer and a workshop corner at home.
+description: Director of Engineering at Umbrage, based in Istanbul. Over 14 years in software, the last eight on architecture; smart home tinkering and a 3D printer at home.
 lang: en
 sample: false
 ---
-I grew up in Istanbul and still live on the Anatolian side. Football is a lifelong thing: I follow the amateur leagues as closely as the professional ones, and I am a congress member at Fenerbahçe, which means I have opinions nobody asked for.
+When I'm away from the keyboard, I enjoy tinkering with smart home tech and making things with my 3D printer.
 
-At home there is a workshop corner, a 3D printer that arrived this autumn, a printer cabinet still on the drawing board, and a house that is slowly learning to do the right thing without being asked. The Life section is where I keep the rest: trips, books, what we watched, and the days worth writing down.
+I also love discovering new restaurants, trying good food, and traveling whenever I get the chance. Every now and then, I like sharing my thoughts on movies, TV shows, and the little things that stick with me.
 
-I write in English here, with Turkish notes where the subject is local. <span lang="tr">Bu siteyi Türkçe okumak isteyenler için notlar da var.</span>
+This is also where I share those experiences and the moments I want to remember.

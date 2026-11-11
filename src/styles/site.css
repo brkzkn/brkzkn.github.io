@@ -723,15 +723,8 @@ h2[id]{scroll-margin-top:96px}
 .about-actions{gap:12px;flex-wrap:wrap}
 .about-stack{display:flex;flex-direction:column;gap:10px;min-width:0}
 .about-stack-lg{display:flex;flex-direction:column;gap:20px;min-width:0}
-.about-focus{gap:24px}.about-away{align-items:center}
-.about-photos{grid-column:8 / span 5;display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.about-stagger{margin-top:32px}
-.about-contact{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
-.about-contact-link{font-size:17px;overflow-wrap:anywhere}
-.about-cv{grid-column:1 / -1;display:flex;flex-direction:row;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-.about-cv-title{font:400 17px/1.4 var(--sans);margin:0}
-@media(max-width:1000px){.about-hero-text,.about-photos{grid-column:1 / -1}.about-contact{grid-template-columns:repeat(2,minmax(0,1fr))}.about-pagehead{padding-bottom:48px}}
-@media(max-width:640px){.about-contact{grid-template-columns:minmax(0,1fr)}.about-stagger{margin-top:0}.about-hero-text{gap:20px}}
+@media(max-width:1000px){.about-hero-text{grid-column:1 / -1}.about-pagehead{padding-bottom:48px}}
+@media(max-width:640px){.about-hero-text{gap:20px}}
 
 /* feed-types review page ("section.review-section" without .section) */
 .review-section:not(.section){padding:8px 0 72px}
@@ -805,6 +798,119 @@ h2[id]{scroll-margin-top:96px}
 @media(max-width:1000px){.about-h1{font-size:40px}}
 @media(max-width:640px){.about-h1{font-size:32px}}
 
-/* 2026-11-11: real portrait on About (square source), replaces the 3:4 hatched placeholder. */
-.about-portrait{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:4px}
-@media(max-width:1000px){.about-portrait{max-width:320px}}
+/* 2026-11-11: About hero. Portrait on five columns with an asymmetric cut (one sweeping top-right curve, soft bottom-right),
+   a solid caption plate pinned to its bottom-left corner, and the text column centred against it. No gradients, no shadows. */
+.about-hero{align-items:center;row-gap:32px}
+.about-portrait-block{grid-column:1 / span 5;position:relative;margin:0;min-width:0}
+.about-portrait{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;object-position:50% 12%;border-radius:20px 220px 96px 20px}
+.about-portrait-cap{position:absolute;left:0;bottom:36px;display:flex;flex-direction:column;gap:4px;padding:14px 22px 14px 20px;background:#171b23;color:#ece8e1;border-left:3px solid var(--orange);border-radius:0 6px 6px 0}
+.about-portrait-name{font:400 22px/1.2 var(--serif)}
+.about-portrait-role{font:500 11px/1.4 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:#c0c6cf}
+.about-hero-text{grid-column:7 / span 6}
+.about-hero-rule{display:block;width:56px;height:3px;background:var(--orange);margin:-4px 0 4px}
+@media(max-width:1000px){.about-hero-text{grid-column:1 / -1}.about-portrait-block{grid-column:1 / -1;max-width:420px}.about-portrait{border-radius:16px 160px 72px 16px}.about-portrait-cap{bottom:28px}}
+@media(max-width:640px){.about-portrait{border-radius:12px 120px 56px 12px}.about-portrait-cap{padding:10px 16px 10px 14px}.about-portrait-name{font-size:19px}}
+
+/* 2026-11-11: About career timeline (replaces the cv-row list on this page). Intro on three columns, a single vertical
+   line with one marker per employer on nine; the current employer's marker and role use the warm accent. Dates come
+   first, company and roles follow; hairline separators between employers; the line ends at the last marker. */
+.cv-section{align-items:start}
+.cv-intro{gap:12px}
+.cv-link{display:inline-flex;align-self:flex-start;align-items:center;gap:8px;margin-top:8px;padding-bottom:3px;border-bottom:1.5px solid var(--orange);color:var(--ink);font-size:15px;text-decoration:none}
+.cv-link:hover{color:var(--orange)}
+.cv-timeline{list-style:none;margin:0;padding:0}
+.cv-entry{position:relative;display:grid;grid-template-columns:28px 150px minmax(0,1fr);column-gap:20px;padding:23px 0}
+.cv-entry:first-child{padding-top:4px}
+.cv-entry:last-child{padding-bottom:0}
+.cv-entry+.cv-entry:after{content:"";position:absolute;top:0;left:48px;right:0;height:1px;background:var(--line)}
+/* vertical line: every entry but the last draws its segment from its marker down into the next marker
+   (bottom = next entry's padding-top + marker offset, so the two overlap under the dot) */
+.cv-entry:before{content:"";position:absolute;left:5px;top:14px;bottom:-36px;width:1px;background:var(--line2)}
+.cv-entry:first-child:before{top:18px}
+.cv-entry:last-child:before{display:none}
+.cv-marker{position:relative;z-index:1;display:block;width:11px;height:11px;margin-top:6px;border-radius:50%;background:var(--line2)}
+.cv-entry.is-current .cv-marker{width:13px;height:13px;margin-top:5px;margin-left:-1px;background:var(--orange)}
+.cv-entry:first-child .cv-marker{margin-top:9px}
+.cv-period{padding-top:4px;white-space:nowrap}
+.cv-body{display:flex;flex-direction:column;gap:14px;min-width:0}
+.cv-company{font:400 26px/1.2 var(--serif);color:var(--ink);margin:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+.cv-company-note{font-size:19px;color:var(--ink2)}
+.cv-role{display:flex;flex-direction:column;gap:4px;min-width:0}
+.cv-role.is-highlight{padding-left:12px;border-left:2px solid var(--orange)}
+.cv-role-title{font:500 16px/1.4 var(--sans);color:var(--ink);display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin:0}
+.cv-role-dates{font:400 12px/1.4 var(--sans);color:var(--ink3);padding:2px 9px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
+.cv-role-desc{margin:0;color:var(--ink2)}
+@media(max-width:1000px){.cv-intro{grid-column:span 12}.cv-timeline{grid-column:span 12}.cv-entry{grid-template-columns:28px 120px minmax(0,1fr);column-gap:16px}.cv-entry+.cv-entry:after{left:44px}.cv-company{font-size:24px}}
+@media(max-width:640px){.cv-entry{grid-template-columns:20px minmax(0,1fr);column-gap:14px;row-gap:6px;padding:18px 0}.cv-entry:before{left:4px;bottom:-28px}.cv-entry+.cv-entry:after{left:34px}.cv-marker{width:9px;height:9px;margin-top:5px}.cv-entry.is-current .cv-marker{width:11px;height:11px;margin-top:4px}.cv-entry:first-child .cv-marker{margin-top:8px}.cv-period{grid-column:2;padding-top:3px}.cv-body{grid-column:2}.cv-company{font-size:22px}.cv-company-note{font-size:16px}}
+
+/* 2026-11-11: About "Certifications": four badge cards, one hairline, no fill. */
+.about-badges{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.about-badge{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:24px 20px;border:1px solid var(--line);border-radius:6px;background:var(--surface);min-width:0}
+.about-badge img{width:96px;height:96px;object-fit:contain;display:block;align-self:center;margin-bottom:8px}
+.about-badge-name{font:500 16px/1.3 var(--sans);color:var(--ink)}
+@media(max-width:1000px){.about-badges{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.about-badges{gap:12px}.about-badge{padding:16px 14px}.about-badge img{width:72px;height:72px}.about-badge-name{font-size:15px}}
+
+/* 2026-11-11: About "Away from the keyboard": four labelled photo tiles and a membership card. */
+.about-away{align-items:start}
+.about-tiles{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.about-tile{position:relative;aspect-ratio:3/4;border-radius:6px;overflow:hidden;background:#E9E3D8;min-width:0}
+.about-tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.about-tile-label{position:absolute;left:12px;bottom:12px;display:inline-flex;align-items:center;gap:7px;padding:6px 10px;border-radius:4px;background:rgba(30,36,48,.78);color:#fff;font:500 13px/1.2 var(--sans)}
+.about-membership{position:relative;display:flex;align-items:center;gap:20px;padding:20px 24px 20px 28px;border:1px solid var(--line);border-radius:6px;background:var(--surface);overflow:hidden}
+/* Club colours on the left edge only; these two hex values are the club's, not design tokens. */
+.about-membership:before,.about-membership:after{content:"";position:absolute;left:0;width:4px;height:50%}
+.about-membership:before{top:0;background:#1B2A5C}.about-membership:after{bottom:0;background:#F2D600}
+.about-membership>img,.about-membership>div{position:relative;z-index:1}
+.about-membership img{width:72px;height:72px;flex:none;display:block}
+/* Right-hand club-colour art: three solid skewed shapes (no gradients), clipped by the card. */
+.about-membership-art{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.about-membership-art i{position:absolute;top:-30%;height:160%;transform:skewX(-24deg);transform-origin:top}
+.about-membership-art .band{right:-40px;width:260px;background:#1B2A5C}
+.about-membership-art .slash{right:150px;width:10px;background:#F2D600}
+.about-membership-art .corner{right:-60px;width:120px;top:55%;background:#F2D600}
+@media(max-width:640px){.about-membership>div{padding-right:72px}.about-membership-art .band{right:-50px;width:110px}.about-membership-art .slash{right:36px;width:6px}.about-membership-art .corner{right:-50px;width:70px;top:60%}}
+.about-membership .h4{font-size:21px}
+@media(max-width:640px){.about-tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.about-membership{gap:16px;padding:16px 16px 16px 20px}.about-membership img{width:56px;height:56px}.about-membership .h4{font-size:19px}}
+
+/* 2026-11-11: About "Technical focus": heading on top, four equal cards (2x2 on tablet, one column on mobile).
+   Hover: accent border, slightly lighter surface, 2px lift. The AI card carries a permanent 2px top rule, a "current
+   focus" tag and a faintly warmer surface; a hovered card is always more prominent than that. Cards are not links,
+   so no cursor, tabindex or focus styles. Tones come from the tokens via color-mix, no hard-coded colours. */
+.focus-head{gap:10px;margin-bottom:8px}
+.focus-sub{max-width:640px}
+.focus-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;align-items:stretch}
+.focus-card{position:relative;display:flex;flex-direction:column;gap:12px;min-width:0;padding:26px;background:var(--surface);border:1px solid var(--line);border-radius:6px;overflow:hidden;transition:border-color .2s ease,background-color .2s ease,transform .2s ease}
+.focus-top{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:26px;margin-bottom:4px}
+.focus-icon{flex:none;color:var(--orange);opacity:.85;transition:opacity .2s ease}
+.focus-title{margin:0}
+.focus-text{margin:0}
+.focus-badge{font-size:11px;padding:3px 9px;line-height:1.4;white-space:nowrap}
+.focus-card.is-current{background:color-mix(in srgb,var(--surface) 90%,var(--orange))}
+.focus-card.is-current:before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--orange);opacity:.8}
+.focus-card:hover{border-color:var(--orange);background:color-mix(in srgb,var(--surface) 94%,white);transform:translateY(-2px)}
+.focus-card:hover .focus-icon{opacity:1}
+@media(max-width:1199px){.focus-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:767px){.focus-grid{grid-template-columns:minmax(0,1fr);gap:16px}.focus-card{padding:20px}}
+@media(prefers-reduced-motion:reduce){.focus-card,.focus-icon{transition:none}.focus-card:hover{transform:none}}
+
+/* 2026-11-11: About "Get in touch" (replaces the three contact panels and the CV panel on this page). Intro on five
+   columns with a short accent rule above the heading; one contact panel on seven: uppercase kicker, the address as the
+   focal serif line, a full-width primary button (mailto) and two quiet social links under a hairline. */
+.touch-grid{align-items:center}
+.touch-intro{gap:12px}
+.touch-rule{display:block;width:44px;height:3px;background:var(--orange);margin-bottom:8px}
+.touch-text{max-width:360px}
+.touch-panel{display:flex;flex-direction:column;align-items:flex-start;gap:14px;padding:36px;background:var(--surface);border:1px solid var(--line);border-radius:6px;min-width:0}
+.touch-kicker{font:500 11px/1.5 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
+.touch-email{font:400 clamp(24px,3.2vw,36px)/1.15 var(--serif);color:var(--ink);margin:0 0 6px;overflow-wrap:anywhere;user-select:all}
+.touch-cta{width:100%;justify-content:flex-start;font-weight:500}
+.touch-cta-label{flex:1;text-align:left}
+.touch-links{list-style:none;margin:6px 0 0;padding:20px 0 0;width:100%;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:12px 36px}
+.touch-link{display:inline-flex;align-items:center;gap:8px;color:var(--ink);font-size:15px;text-decoration:none;transition:color .15s ease}
+.touch-link-icon{color:var(--orange)}
+.touch-link:hover{color:var(--orange)}
+.touch-link:focus-visible,.touch-cta:focus-visible{outline:2px solid var(--orange);outline-offset:3px}
+@media(max-width:1000px){.touch-intro,.touch-panel{grid-column:span 12}.touch-panel{padding:28px}}
+@media(max-width:640px){.touch-panel{padding:22px 20px;gap:12px}.touch-email{font-size:clamp(20px,6.5vw,26px)}.touch-links{gap:12px 24px}}
+@media(prefers-reduced-motion:reduce){.touch-link{transition:none}}
