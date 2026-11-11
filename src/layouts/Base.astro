@@ -1,5 +1,5 @@
 ---
-// Base layout: <head>, skip link, header, preview banner, <main>, footer, script entry.
+// Base layout: <head>, skip link, header, <main>, footer, script entry.
 // Props:
 //   title            page title without the site suffix (rendered "<title> — Burak Özkan")
 //   rawTitle         use `title` exactly as given (home page)
@@ -8,7 +8,7 @@
 //   originalLang     'en' | 'tr' -> <main data-original-lang>; set on every page that shows content with an original language
 //   nav              override the active nav item ('home'|'work'|'projects'|'life'|'gear'|'writing'|'about'|null);
 //                    default is computed from Astro.url (/notes/ and /life/* count as Life)
-//   minimal          header without the nav, footer without the link columns, no preview banner (coming-soon page)
+//   minimal          header without the nav, footer without the link columns (coming-soon page)
 //   canonical        absolute or site-relative canonical URL (English path); default is the current path on https://burakozkan.net
 // Locale (ADR-006): Astro.currentLocale is 'tr' for /tr/* pages. A /tr/ page without a real translation (see
 // src/i18n/translated.ts) is a fallback: English body, Turkish interface, noindex, canonical = the English page, no hreflang.
@@ -68,7 +68,6 @@ const canonicalUrl = locale === 'tr' && translated ? trUrl : enUrl;
 const held = comingSoon && path !== '/' && path !== '/privacy/';
 const robots = noindex || held ? 'noindex' : isFallback ? 'noindex,follow' : undefined;
 const bodyHtml = localizeHtml(await Astro.slots.render('default'), locale);
-const preview = import.meta.env.PUBLIC_PREVIEW !== 'false';
 ---
 <!doctype html>
 <html lang={locale}>
@@ -100,7 +99,6 @@ const preview = import.meta.env.PUBLIC_PREVIEW !== 'false';
 <body>
 <a class="skip-link" href="#main">{t('Skip to content')}</a>
 <Header current={current} minimal={minimal} />
-{preview && !minimal && <div class="demo-notice">{t('DESIGN PREVIEW · Stories, product ownership, career examples and metrics are sample content.')}</div>}
 <main id="main" data-original-lang={originalLang}>
 <Fragment set:html={bodyHtml} />
 </main>
