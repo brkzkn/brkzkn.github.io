@@ -138,20 +138,30 @@ const work = defineCollection({
 });
 
 // ---- gear: one file per device, src/content/gear/<slug>.md --------------------------------
+// Categories are fixed and language-independent (labels and icons live in src/lib/gear.ts). The English and Turkish
+// pages render the same files: `take` is the English line, `takeTr` the Turkish one; model names are never translated.
+// Only `name`, `category` and `take` are required: nothing is shown for a status or a date that is not known.
 const gear = defineCollection({
   loader: glob({ base: './src/content/gear', pattern: '**/*.md' }),
   schema: ({ image }) =>
     z.object({
       name: z.string(),
-      category: z.enum(['computing', 'audio-video', 'wearables', 'home-network', 'workshop', 'play', 'everyday']),
-      since: z.string(), // "2021" or "2021-03"
-      until: z.string().optional(),
-      status: z.enum(['in-use', 'retired', 'sold']),
-      take: z.string(), // one line
-      image: image().optional(),
-      related: z.array(z.string()).default([]), // post slugs
+      category: z.enum(['computing', 'smart-home', 'workshop', 'everyday', 'entertainment']),
+      take: z.string(), // 2–3 lines of personal experience, English
+      takeTr: z.string().optional(), // the same in Turkish; falls back to `take` on /tr/gear/
+      status: z.enum(['in-use', 'retired', 'sold']).optional(), // retired and sold both render as "previously used"
+      since: z.string().regex(/^\d{4}(-\d{2})?$/).optional(), // "2021" or "2021-03": when it arrived
+      until: z.string().regex(/^\d{4}(-\d{2})?$/).optional(), // when it left
+      updated: z.string().regex(/^\d{4}-\d{2}(-\d{2})?$/).optional(), // last edit of this entry; feeds "Last updated"
+      image: image().optional(), // product photo next to the file, e.g. ./images/<slug>.jpg; a category icon stands in without one
+      imageFit: z.enum(['cover', 'contain']).default('cover'), // contain for square product renders on white, so nothing is cropped
+      imageAlt: z.string().optional(), // defaults to `name`
+      imageAltTr: z.string().optional(),
+      related: z.array(z.string()).default([]), // post slugs, kept as data; cards do not link out (owner decision, 2026-11-13)
+      rating: z.number().min(0.5).max(5).multipleOf(0.5).optional(), // the owner's own score, half steps; the card footer is omitted without it
+      order: z.number().int().optional(), // manual sort inside the grid; lower comes first, unset sorts after
       draft: z.boolean().default(false),
-      sample: z.boolean().default(false),
+      sample: z.boolean().default(false), // design fixture, not a verified device; hidden when PUBLIC_PREVIEW is 'false'
     }), // `notes` is the Markdown body
 });
 

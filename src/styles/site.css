@@ -540,11 +540,6 @@ h2[id]{scroll-margin-top:96px}
 @media(max-width:1000px){.photo-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:160px}}
 @media(max-width:640px){.photo-grid{grid-template-columns:minmax(0,1fr);grid-auto-rows:140px}.photo-grid>.wide{grid-column:auto}.photo-grid>.tall{grid-row:auto}}
 
-/* gear row: name, since, one-line take, status. <li class="gear-row"><div><b>Name</b></div><span class="tiny">Since 2024</span><p class="small">Take</p><span class="tag">In use</span></li> */
-.gear-row{display:grid;grid-template-columns:minmax(150px,1.2fr) 110px minmax(0,2.4fr) auto;gap:8px 24px;align-items:baseline;padding:16px 0;border-top:1px solid var(--line);list-style:none}
-.gear-row>*{min-width:0;margin:0}
-@media(max-width:1000px){.gear-row{grid-template-columns:minmax(0,1fr) auto;gap:6px 16px}.gear-row>p{grid-column:1/-1;grid-row:2}}
-@media(max-width:640px){.gear-row{grid-template-columns:minmax(0,1fr)}.gear-row>p{grid-row:auto}}
 
 /* log item (project / smart-home log): date column plus body. <ol class="log"><li class="log-item"><time datetime="2026-10-12">12 Oct</time><div>..</div></li> */
 .log{list-style:none;margin:0;padding:0}
@@ -597,7 +592,7 @@ h2[id]{scroll-margin-top:96px}
 .bullets{margin:0;padding-left:18px;font-size:15px;line-height:1.6;color:var(--ink2)}
 .list-main{gap:6px;flex:1;min-width:0}
 /* one hairline-topped section for every page that needs a rule above a block */
-.section-ruled,.sh-ruled,.section.top-rule,.about-rule,.diary-rule,.article-close,.article-related,.gear-cats{border-top:1px solid var(--line)}
+.section-ruled,.sh-ruled,.section.top-rule,.about-rule,.diary-rule,.article-close,.article-related{border-top:1px solid var(--line)}
 .jump-bar,.filterbar,.diary-stats{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 
 /* projects */
@@ -662,16 +657,6 @@ h2[id]{scroll-margin-top:96px}
 @media(max-width:1000px){.diary-title{font-size:60px}.diary-prevnext{align-items:flex-start;text-align:left}}
 @media(max-width:640px){.diary-title{font-size:44px}.diary-trio .ph:not(:first-child){display:none}.diary-trio{grid-template-columns:minmax(0,160px)}.diary-trio .stagger{margin-bottom:0}}
 
-/* gear */
-.gear-head{padding-bottom:40px}.gear-head .grid{align-items:end}.gear-head .col{gap:20px}.gear-head .lede{max-width:580px}
-.gear-head .stat-strip .fig{text-align:left}
-.gear-recent{padding-bottom:48px}.gear-recent .sechead{margin-bottom:24px}.gear-recent .g3{gap:24px}
-.gear-recent .card.panel{gap:14px;padding:20px}.gear-recent .card .row{gap:8px;justify-content:space-between}
-.gear-cats>.wrap{display:flex;flex-direction:column;gap:56px}
-.gear-list{list-style:none;margin:0;padding:0;font-size:15px}
-.gear-list .gear-row b{font-weight:500;font-size:17px;color:var(--ink)}
-.gear-list .gear-row.retired b{color:var(--ink2)}
-.gear-list .gear-row .tag{justify-self:start}
 
 /* note */
 .note-detail{padding:40px 0 72px}.note-detail>.note-layout{max-width:1240px}
@@ -914,3 +899,62 @@ h2[id]{scroll-margin-top:96px}
 @media(max-width:1000px){.touch-intro,.touch-panel{grid-column:span 12}.touch-panel{padding:28px}}
 @media(max-width:640px){.touch-panel{padding:22px 20px;gap:12px}.touch-email{font-size:clamp(20px,6.5vw,26px)}.touch-links{gap:12px 24px}}
 @media(prefers-reduced-motion:reduce){.touch-link{transition:none}}
+
+/* 2026-11-12: Gear redesign (components/GearPage.astro). Photo hero on a 6/6 split with the computed stat row, a pill
+   filter row (real buttons, aria-pressed, orange tint when active) and one three-column card grid: 16:9 media with the
+   category badge, serif name, clamped take, hairline footer with the owner's star rating (2026-11-13; replaced status and date). Replaces the old gear-head /
+   gear-recent / gear-list rules. Hover is a border change and a 3% image zoom in 200ms; none under reduced motion. */
+.gear-hero{padding:56px 0 40px}
+.gear-hero .grid{align-items:center}
+.gear-hero-text{gap:20px;min-width:0}
+.gear-hero-text .h1{font-size:clamp(44px,5.6vw,72px)}
+.gear-hero-text .lede{max-width:520px;font-size:22px}
+.gear-rule{display:block;width:56px;height:3px;background:var(--orange);margin-bottom:4px}
+.gear-hero-media{min-width:0;position:relative}
+.gear-hero-media img,.gear-hero-ph{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;border-radius:6px;border:1px solid var(--line)}
+.gear-hero-ph{min-height:0;padding:14px}
+.gear-hero-media::after{content:"";position:absolute;inset:0;border-radius:6px;background:linear-gradient(90deg,var(--bg) 0%,transparent 22%);pointer-events:none;opacity:.9}
+.gear-body{padding-top:0}
+.gear-filters{display:flex;flex-wrap:wrap;gap:8px;padding-top:28px;border-top:1px solid var(--line)}
+.gear-filter{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:0 13px;border-radius:999px;border:1px solid var(--line2);background:var(--surface);color:var(--ink2);font-size:14px;line-height:1;white-space:nowrap;cursor:pointer;transition:border-color .2s ease,background-color .2s ease,color .2s ease;max-width:100%}
+.gear-filter-icon{display:inline-flex;color:var(--ink3);transition:color .2s ease}
+.gear-filter-count{color:var(--ink3);font-size:13px}
+.gear-filter:hover{border-color:var(--ink3);color:var(--ink)}
+.gear-filter:hover .gear-filter-icon{color:var(--ink2)}
+.gear-filter[aria-pressed=true]{background:color-mix(in srgb,var(--orange) 12%,var(--surface));border-color:var(--orange);color:var(--ink)}
+.gear-filter[aria-pressed=true] .gear-filter-icon,.gear-filter[aria-pressed=true] .gear-filter-count{color:var(--warm-ink)}
+.gear-summary{margin:14px 0 0}
+.gear-grid{list-style:none;margin:28px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;align-items:stretch}
+.gear-card{display:flex;flex-direction:column;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;overflow:hidden;transition:border-color .2s ease}
+.gear-card:hover{border-color:var(--line2)}
+.gear-media{position:relative;aspect-ratio:16/9;background:var(--placeholder);overflow:hidden}
+.gear-media img,.gear-media picture{display:block;width:100%;height:100%}
+.gear-media img{object-fit:cover;object-position:center;transition:transform .2s ease}
+.gear-card:hover .gear-media img{transform:scale(1.03)}
+.gear-media.contain{background:#fff}.gear-media.contain img{object-fit:contain;padding:14px;box-sizing:border-box}
+.gear-media-fallback{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--ink3);background:repeating-linear-gradient(135deg,rgba(30,36,48,.035) 0 2px,transparent 2px 14px)}
+.gear-badge{position:absolute;top:12px;left:12px;display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-size:12px;line-height:1;color:#F3EFE8;background:rgba(23,27,35,.72);border:1px solid rgba(255,255,255,.16);max-width:calc(100% - 24px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gear-badge-icon{display:inline-flex;color:#F0B78E;flex:none}
+.gear-card-body{display:flex;flex-direction:column;gap:8px;padding:18px 20px 16px;flex:1}
+.gear-name{font:400 22px/1.2 var(--serif);color:var(--ink);letter-spacing:-.01em}
+.gear-take{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.gear-card-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px 14px;border-top:1px solid var(--line);font-size:13px;color:var(--ink3)}
+.gear-rating{flex-wrap:nowrap}
+.gear-rating-label{color:var(--ink3);white-space:nowrap}
+.gear-rating-value{display:inline-flex;align-items:center;gap:10px;white-space:nowrap}
+.gear-stars{display:inline-flex;gap:2px;line-height:0}
+.gear-star{position:relative;display:inline-flex;color:var(--line2)}
+.gear-star-base,.gear-star-fill{display:inline-flex;line-height:0}
+.gear-star-fill{position:absolute;inset:0;color:var(--orange);overflow:hidden;width:0}
+.gear-star.full .gear-star-fill{width:100%}
+.gear-star.half .gear-star-fill{width:50%}
+.gear-rating-num{font-size:14px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums}
+.gear-empty,.gear-none{margin-top:28px;text-align:left}
+.gear-empty h2,.gear-none h2{margin-bottom:8px}
+.gear-empty button{padding-top:14px}
+[data-theme=dark] .gear-media-fallback{background:repeating-linear-gradient(135deg,rgba(255,255,255,.04) 0 2px,transparent 2px 14px)}
+@media(min-width:1200px){.gear-filters{flex-wrap:nowrap}.gear-filter{flex:0 1 auto;min-width:0}}
+@media(max-width:1199px){.gear-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:1000px){.gear-hero{padding:40px 0 32px}.gear-hero-text,.gear-hero-media{grid-column:span 12}.gear-hero-media::after{background:linear-gradient(180deg,var(--bg) 0%,transparent 18%)}.gear-hero-text .lede{max-width:600px}}
+@media(max-width:767px){.gear-hero{padding:28px 0 24px}.gear-hero-text .h1{font-size:clamp(38px,11vw,48px)}.gear-hero-text .lede{font-size:19px}.gear-hero-media img,.gear-hero-ph{aspect-ratio:4/3}.gear-filters{gap:8px;padding-top:24px}.gear-filter{min-height:44px;padding:0 14px}.gear-grid{grid-template-columns:minmax(0,1fr);gap:16px;margin-top:20px}.gear-card-body{padding:16px 16px 12px}.gear-card-foot{padding:10px 16px 12px}}
+@media(prefers-reduced-motion:reduce){.gear-card,.gear-media img,.gear-filter,.gear-filter-icon{transition:none}.gear-card:hover .gear-media img{transform:none}}

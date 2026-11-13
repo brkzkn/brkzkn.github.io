@@ -1,8 +1,9 @@
 ---
-name: "Ray-Ban Meta glasses"
-category: wearables
-since: "2026-10"
-status: in-use
-take: "Bought for the camera, kept for the speakers. Two weeks in; a proper note once the novelty wears off."
-sample: true
+name: "Ray-Ban Meta Wayfarer Gen 1"
+category: everyday
+image: ./images/ray-ban-meta.webp
+rating: 3
+take: "I have not used them all that actively, but overall they do the job well."
+takeTr: "Çok aktif kullanma deneyimim olmadı ama genel olarak başarılı."
+order: 8
 ---

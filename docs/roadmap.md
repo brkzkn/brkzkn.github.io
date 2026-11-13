@@ -40,11 +40,11 @@ Do this while porting to Astro; none of these belong on the live site. Items mar
 
 ## Open issues from the prototype review
 1. Subscribe form removed from the home sidebar (2026-11-04). **TODO after launch:** pick a provider (Buttondown or Kit), re-add the `sidebar-subscribe` module (CSS was deleted; restore from git history `f284334`), wire the form, add the TR strings.
-2. Gear/Life filters visual only.
+2. Life filters visual only (Gear filters work since the 2026-11-12 redesign).
 3. Placeholder images outside the home hero.
 4. TR dictionary does not cover all page copy (by design; content translated at publish time).
 5. Mobile menu is a dropdown; full-screen menu design exists in the original concept.
-6. Gear and Life pages still show the "Design preview" banner; remove the banner at launch.
+6. Life page still shows the "Design preview" banner; remove the banner at launch. Gear shows a `mock` note instead while sample entries exist.
 
 ## Coming-soon mode (2026-11-04)
 While content is being written, `deploy.yml` sets `PUBLIC_COMING_SOON: 'true'`: `/` and `/tr/` show a short holding page (`src/components/ComingSoon.astro`, minimal header and footer, no nav), every other page is `noindex`, and the sitemap lists only the holding page and privacy. The real home page stays at the unlisted `/preview/`. Locally (`npm run dev`) the flag is off, so `/` is the real home.
