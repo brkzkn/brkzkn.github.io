@@ -56,7 +56,7 @@ button{font:inherit}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:0 22px;border-radius:4px;border:1px solid var(--ink);color:var(--ink);background:transparent;font-size:16px;cursor:pointer;text-decoration:none}
 .btn:hover{color:var(--ink);border-color:var(--orange)}
 .btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.btn.primary:hover{background:var(--blue-ink);border-color:var(--blue-ink);color:#fff}
+.btn.primary:hover{background:var(--ink2);border-color:var(--ink2);color:var(--bg)}
 .btn.sm{min-height:40px;padding:0 16px;font-size:15px}
 .link{color:var(--ink);text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--line2);text-decoration-thickness:1px}
 .link:hover{color:var(--orange);text-decoration-color:var(--orange)}
