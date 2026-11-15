@@ -31,7 +31,7 @@ const related = sec('Related')?.list ?? [];
   <div class="wrap">
     <div class="grid review-head">
       <div class="span8 col">
-        <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="/life/">Life</a></li><li>Culture</li><li aria-current="page">Restaurant</li></ol></nav>
+        <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="/life/">Life</a></li>{d.category !== 'restaurant' && <li>Culture</li>}<li aria-current="page">Restaurant</li></ol></nav>
         <p class="small"><OriginChip lang={d.lang} />{d.sample && <> <span class="mock">Sample entry, fictional place</span></>}</p>
         <h1 class="h1">{d.name ?? d.title}</h1>
         <p class="lede">{body.lede}</p>

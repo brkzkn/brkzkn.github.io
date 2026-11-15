@@ -8,7 +8,7 @@ export const filterOf = (p: Post) =>
   p.data.category === 'work' ? 'architecture' : p.data.category === 'projects' ? 'projects' : 'life';
 
 const TOPIC: Record<Post['data']['category'], string> = {
-  work: 'Software architecture', projects: 'Projects', travel: 'Travel', culture: 'Culture',
+  work: 'Software architecture', projects: 'Projects', travel: 'Travel', culture: 'Culture', restaurant: 'Culture',
   family: 'Personal notes', gear: 'Gear', personal: 'Personal notes',
 };
 

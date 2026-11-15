@@ -7,7 +7,7 @@ One collection, `posts`, with a `type` field. The feed is the collection sorted 
 ```yaml
 title: ""            # optional for type: note
 type: note | album | writing | project | milestone | review | restaurant | trip | monthly | link   # shape of the post
-category: work | projects | travel | culture | family | gear | personal      # topic of the post
+category: work | projects | travel | culture | restaurant | family | gear | personal      # what the post is about
 date: 2026-10-30
 lang: tr | en        # original language
 translated: true     # a sibling file exists in the other language, same slug
@@ -19,7 +19,7 @@ place:               # optional
   lng: 0
 photos: [./01.jpg, ./02.jpg]   # colocated with the post
 cover: ./cover.jpg   # trips and writing
-rating: 4            # review and restaurant, 1–5
+rating: 4.5          # review and restaurant, 0.5–5 in half steps
 draft: false
 ```
 
@@ -35,7 +35,7 @@ cover: ./poster.jpg              # film and series: poster (2:3); device: produc
 platforms:                       # optional, film and series only
   - id: netflix                  # netflix | prime | appletv | disney | mubi | cinema
     href: https://...            # optional; without it the chip is a plain label
-# restaurant (category: culture)
+# restaurant (the type; its topic is normally category: restaurant)
 name: ""
 cuisine: ""
 area: "Kadıköy, Istanbul"
@@ -56,9 +56,9 @@ Restaurants and trips may link to a detail page (`/life/restaurants/<slug>/`, `/
 
 ## Life page (ADR-007)
 
-`/life/` and `/tr/life/` show posts of the seven types note, album, review, milestone, trip, monthly and restaurant, grouped by the month of `date`, newest first. The page has its own four categories (`src/lib/life.ts`): **family**, **travel** and **culture** are the post's `category`; **restaurant** is every `type: restaurant` post, whatever its `category` (which stays `culture` for the home feed, ADR-005). Posts of other categories do not appear on Life.
+`/life/` and `/tr/life/` show posts of the seven types note, album, review, milestone, trip, monthly and restaurant whose `category` is **family**, **travel**, **restaurant** or **culture**, grouped by the month of `date`, newest first. The four filters are that field and nothing else (`src/lib/life.ts`). `category` is what a post is about, `type` is how it is drawn: a restaurant visit is `type: restaurant, category: restaurant`, and a note about a dinner can be `type: note, category: restaurant`. The home feed has no Restaurants topic and lists `restaurant` posts under Culture (`feedCategory()` in `src/lib/feed.ts`).
 
-The type picks the card family, nothing else: compact (note, review without `cover`), standard (album, restaurant, monthly, review with `cover`), featured (trip, milestone). Picture used: restaurant `photo`, album and note `photos[0]`, review `cover`, trip, milestone and monthly `cover` then `photos[0]`. No picture, no picture block; nothing is invented (no rating, place or link unless the field or the page exists). A monthly diary is dated inside the month it covers, so it sits in that month's group.
+The type picks the card family, nothing else: compact (note, review without `cover`), standard (album, restaurant, monthly, review with `cover`), featured (trip, milestone). Picture used: restaurant `photo`, album and note `photos[0]`, review `cover`, trip, milestone and monthly `cover` then `photos[0]`. A published entry without a picture gets no picture block; nothing is invented (no rating, place or link unless the field or the page exists). A `rating` is drawn as stars in half steps. A card shows a language chip only when its text is not in the page's language. A monthly diary is dated inside the month it covers, so it sits in that month's group.
 
 ## Separate collections
 

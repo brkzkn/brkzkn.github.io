@@ -1,11 +1,12 @@
 // Life timeline data layer: the four user-facing categories, the three card families, the month groups and the copy
 // the /life/ and /tr/life/ pages share. Entries come from the posts collection (schema in src/content.config.ts).
 //
-// Category and type are two different axes (ADR-007):
-//  - the *category* is what the reader filters by. Three come straight from the post's `category` field
-//    (family, travel, culture); "restaurant" is a Life-page category that every `type: restaurant` post belongs to,
-//    whatever topic its `category` field carries. The schema's topic list and the home feed are unchanged.
-//  - the *type* (note, album, ...) only decides which card family draws the entry.
+// Category and type are two independent axes (ADR-007):
+//  - the *category* is what the post is about and what the reader filters by. It is the post's `category` field,
+//    nothing else: family, travel, restaurant or culture. Posts of any other category are not on the Life page.
+//  - the *type* (note, album, ..., restaurant) is how the post is drawn: it only picks the card family.
+// A `type: restaurant` post is normally `category: restaurant`, but neither implies the other: a note about a
+// dinner can be filed under restaurant, and nothing here looks at the type to decide a category.
 import type { ImageMetadata } from 'astro';
 import { getPosts, postSlug, postUrl, postFileLang, type Post } from './posts';
 import { parseBody, isoMonth, isoDay } from './life-body';
@@ -25,10 +26,9 @@ export const LIFE_CATEGORIES: ReadonlyArray<{ id: LifeCategoryId; en: string; tr
   { id: 'culture', en: 'Culture', tr: 'Kültür & Sanat', tag: { en: 'Culture', tr: 'Kültür & Sanat' }, icon: 'ticket' },
 ];
 
-/** The Life category of a post, or null when the post does not belong on the Life page. */
-export function lifeCategoryOf(d: { type: string; category: string }): LifeCategoryId | null {
-  if (d.type === 'restaurant') return 'restaurant';
-  return d.category === 'family' || d.category === 'travel' || d.category === 'culture' ? d.category : null;
+/** The Life category of a post: its `category` field when that is one of the four, otherwise null (not on the Life page). */
+export function lifeCategoryOf(d: { category: string }): LifeCategoryId | null {
+  return LIFE_CATEGORIES.find((c) => c.id === d.category)?.id ?? null;
 }
 
 /** Seven post types, three card families. A review is a photo card only when it has a real cover. */
@@ -52,7 +52,7 @@ export interface LifeEntry {
   iso: string; // <time datetime>
   dateText: string;
   lang: LifeLang; // original language of the post
-  textLang?: LifeLang; // language of the file shown, marked on the title and text when it differs from the page
+  textLang?: LifeLang; // language of the text shown (the file's language). Unknown -> no language chip, no lang attribute
   title?: string; // notes and albums may have none
   text: string;
   href?: string; // only when a real page exists
@@ -98,10 +98,11 @@ export function lifeCopy(lang: LifeLang) {
         one: '1 içerik', many: '{n} içerik',
         emptyH: 'Bu kategoride henüz içerik yok.', emptyP: 'Başka bir kategori seç ya da tüm zaman çizelgesine dön.', emptyBtn: 'Tümünü göster',
         noneH: 'Zaman çizelgesi şimdilik boş.', noneP: 'Kayıtlar yaşandıkça eklenecek. Yakında.',
-        originalNote: 'İçerikler yazıldıkları dilde gösterilir; dil her kartta belirtilir.',
+        originalNote: 'Türkçesi olmayan içerikler yazıldıkları dilde gösterilir ve kartta belirtilir.',
         milestone: 'Özel an', diary: 'Kültür günlüğü',
         days: (n: number) => `${n} gün`, photos: (n: number) => `${n} fotoğraf`,
-        cta: { trip: 'Rehberi oku', restaurant: 'Restoran notu', monthly: 'Günlüğü aç', note: 'Notu oku' },
+        rated: (r: string) => `5 üzerinden ${r} puan`,
+        cta: { trip: 'Rehberi oku', restaurant: 'Detaylar', monthly: 'Günlüğü aç', note: 'Notu oku' },
         subject: (s: string) => SUBJECTS_TR[s] ?? s,
       }
     : {
@@ -118,7 +119,8 @@ export function lifeCopy(lang: LifeLang) {
         originalNote: '',
         milestone: 'Milestone', diary: 'Culture diary',
         days: (n: number) => `${n} day${n === 1 ? '' : 's'}`, photos: (n: number) => `${n} photo${n === 1 ? '' : 's'}`,
-        cta: { trip: 'Read the guide', restaurant: 'Restaurant details', monthly: 'Open the diary', note: 'Read the note' },
+        rated: (r: string) => `Rated ${r} out of 5`,
+        cta: { trip: 'Read the guide', restaurant: 'Details', monthly: 'Open the diary', note: 'Read the note' },
         subject: (s: string) => s,
       };
 }

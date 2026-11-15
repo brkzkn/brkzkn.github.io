@@ -1,0 +1,12 @@
+---
+// Five read-only stars for a personal rating in half steps: full, half (clipped overlay) or empty. Decorative on its
+// own: the caller gives the value in words (an aria-label on a role="img" wrapper) and hides these stars from
+// assistive technology, either on that wrapper's children or with the `hidden` prop. Styles: .gear-stars in site.css.
+// Used by the Gear cards and the Life timeline cards.
+import { starKind } from '../lib/rating';
+
+interface Props { value: number; size?: number; hidden?: boolean }
+const { value, size = 15, hidden = false } = Astro.props;
+const star = `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" aria-hidden="true"><path d="m12 2.8 2.9 5.9 6.5.9-4.7 4.6 1.1 6.4L12 17.6l-5.8 3 1.1-6.4-4.7-4.6 6.5-.9L12 2.8Z"/></svg>`;
+---
+<span class="gear-stars" aria-hidden={hidden ? 'true' : undefined}>{[0, 1, 2, 3, 4].map((i) => <span class:list={['gear-star', starKind(value, i)]}><span class="gear-star-base" set:html={star} /><span class="gear-star-fill" set:html={star} /></span>)}</span>

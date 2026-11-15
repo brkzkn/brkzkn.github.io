@@ -1,7 +1,7 @@
 ---
 title: Küçük Liman
 type: restaurant
-category: culture
+category: restaurant
 date: 2026-10-30
 lang: en
 tags: [Restaurants]

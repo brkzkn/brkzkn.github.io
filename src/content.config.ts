@@ -43,7 +43,7 @@ const posts = defineCollection({
           'note', 'album', 'writing', 'project', 'milestone',
           'review', 'restaurant', 'trip', 'monthly', 'link',
         ]).default('note'),
-        category: z.enum(['work', 'projects', 'travel', 'culture', 'family', 'gear', 'personal']),
+        category: z.enum(['work', 'projects', 'travel', 'culture', 'restaurant', 'family', 'gear', 'personal']), // what the post is about
         date: z.coerce.date(),
         lang: z.enum(LANGS), // original language of the post
         translated: z.boolean().default(false), // a sibling file in the other language exists
@@ -59,7 +59,7 @@ const posts = defineCollection({
         photos: z.array(image()).default([]), // trips take 1-4
         cover: image().optional(), // trips, writing; film/series poster (2:3); device product image
         alt: z.array(z.string()).default([]), // optional alt text per photo, same order as `photos`
-        rating: z.number().int().min(1).max(5).optional(), // review, restaurant
+        rating: z.number().min(0.5).max(5).multipleOf(0.5).optional(), // review, restaurant: the owner's own score, half steps
         link: z.string().optional(), // detail page route (restaurant, trip, album) or external URL for type: link
         draft: z.boolean().default(false),
         sample: z.boolean().default(false), // sample content, tracked for the launch cleanup (docs/roadmap.md)
@@ -69,7 +69,7 @@ const posts = defineCollection({
         creator: z.string().optional(),
         platforms: z.array(platform).optional(), // film and series only
 
-        // restaurant (category: culture; on the Life page every restaurant is in the Restaurants category, ADR-007)
+        // restaurant (the type, i.e. how it is drawn; its topic is normally category: restaurant, ADR-007)
         name: z.string().optional(),
         cuisine: z.string().optional(),
         area: z.string().optional(),

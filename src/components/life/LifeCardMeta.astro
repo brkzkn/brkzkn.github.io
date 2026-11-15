@@ -1,0 +1,12 @@
+---
+// The metadata of a Life card: date, facts (place, photo count), rating. Drawn in the foot of standard and featured
+// cards and in the top row of compact cards, so a short entry has no separate footer.
+import StarRating from '../StarRating.astro';
+import { lifeCopy, type LifeEntry, type LifeLang } from '../../lib/life';
+import { formatRating } from '../../lib/rating';
+
+interface Props { e: LifeEntry; lang: LifeLang }
+const { e, lang } = Astro.props;
+const c = lifeCopy(lang);
+---
+<time datetime={e.iso}>{e.dateText}</time>{e.facts.map((f) => <span class="life-card-fact">{f}</span>)}{e.rating !== undefined && <span class="life-card-rating" role="img" aria-label={c.rated(formatRating(e.rating, lang))}><StarRating value={e.rating} size={14} hidden /></span>}

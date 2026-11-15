@@ -1,6 +1,6 @@
 # ADR-005: Restaurants and trips are their own feed types
 
-Date: 2026-11-03 · Status: accepted
+Date: 2026-11-03 · Status: accepted · Revised by ADR-007 (2026-11-13): `restaurant` is also a `category` value; the home feed still lists it under Culture.
 
 ## Context
 In the prototype a restaurant visit and a trip were both rendered as a photo album with a caption. Both have structured facts (restaurant: name, cuisine, price level, stars; trip: destination, dates) and both are expected to have a detail page. A photo album has no place for those fields, and the link to the detail page was a small text link that was easy to miss. An earlier version of the content model also treated restaurants as a `review` subject.

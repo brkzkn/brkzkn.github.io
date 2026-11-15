@@ -16,6 +16,8 @@ export const feedTypeLabels: Record<string, string> = {
 export const feedCategoryLabels: Record<string, string> = {
   work: 'Work', projects: 'Projects', travel: 'Travel', culture: 'Culture', family: 'Family', gear: 'Gear', personal: 'Personal',
 };
+/** The home feed has no Restaurants topic: a post with category `restaurant` is listed under Culture there (ADR-005, ADR-007). */
+export const feedCategory = (category: string) => (category === 'restaurant' ? 'culture' : category);
 // Where a film or series was watched. `mark` is a neutral monogram, not a logo (real logos are brand assets).
 export const feedPlatforms: Record<string, { label: string; mark: string }> = {
   netflix: { label: 'Netflix', mark: 'N' }, prime: { label: 'Prime Video', mark: 'P' }, appletv: { label: 'Apple TV+', mark: 'tv' },
@@ -75,7 +77,7 @@ export function postToEntry(p: Post): FeedEntry {
   const photos = d.photos.map((im, i) => ({ src: im.src, alt: d.alt[i] ?? '', w: im.width, h: im.height }));
   const img = (im?: { src: string; width: number; height: number }, alt = d.alt[0] ?? '') => (im ? { src: im.src, alt, w: im.width, h: im.height } : undefined);
   const e: FeedEntry = {
-    id: slug, type: d.type, category: d.category, publishedAt: iso(d.date), language: d.lang, tags: d.tags, sample: d.sample,
+    id: slug, type: d.type, category: feedCategory(d.category), publishedAt: iso(d.date), language: d.lang, tags: d.tags, sample: d.sample,
   };
   const detail = b.paragraphs.length > 1 || b.sections.size > 0 || (d.photos.length === 0 && d.alt.length > 0);
   switch (d.type) {

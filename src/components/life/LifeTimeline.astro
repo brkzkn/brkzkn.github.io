@@ -48,7 +48,7 @@ const Svg = (name: string, size = 15) =>
         <section class="life-month" data-life-month={g.month} aria-labelledby={`life-month-${g.month}`}>
           <h2 class="life-month-label" id={`life-month-${g.month}`}><time datetime={g.month}><span aria-hidden="true"><span class="life-month-m">{g.short.split(' ')[0]}</span>{' '}<span class="life-month-y">{g.short.split(' ')[1]}</span></span><span class="sr-only">{g.long}</span></time></h2>
           <div class="life-cards">
-            {g.cards.map((x) => <LifeCard e={x.e} span={x.span} />)}
+            {g.cards.map((x) => <LifeCard e={x.e} span={x.span} lang={lang} />)}
           </div>
         </section>
       ))}

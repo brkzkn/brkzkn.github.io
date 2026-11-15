@@ -1,16 +1,20 @@
 ---
 // One Life timeline card. A single component draws all seven post types through three families (is-compact,
 // is-standard, is-featured; mapping in src/lib/life.ts). The parts are the same everywhere: optional media, kicker
-// row (category tag, kind, original language), optional title, text, foot (date, facts, rating, call to action).
+// row (category tag, kind), optional title, text, foot (date, facts, rating, call to action). A compact card has no foot:
+// its metadata sits at the end of the kicker row. The language chip appears only when the text is not in the page's language.
 // The title link is stretched over the card, so a card is one link and an entry without a page has none.
 import { Picture } from 'astro:assets';
 import OriginChip from './OriginChip.astro';
-import Stars from './Stars.astro';
-import type { LifeEntry } from '../../lib/life';
+import LifeCardMeta from './LifeCardMeta.astro';
+import type { LifeEntry, LifeLang } from '../../lib/life';
 import { rowOf, type LifeSpan } from '../../lib/life-layout';
 
-interface Props { e: LifeEntry; span: LifeSpan }
-const { e, span } = Astro.props;
+interface Props { e: LifeEntry; span: LifeSpan; lang: LifeLang }
+const { e, span, lang } = Astro.props;
+const compact = e.family === 'compact';
+// Language of the text when it is known and differs from the page: shown as a chip and set as `lang` on the text.
+const other = e.textLang && e.textLang !== lang ? e.textLang : undefined;
 const m = e.media;
 const portrait = m?.kind === 'image' && m.portrait;
 const sizes =
@@ -29,22 +33,33 @@ const bare = !!e.href && !e.title && !e.text;
   {m?.kind === 'image' && (
     <div class="life-card-media">
       {m.src.format === 'svg'
-        ? <img src={m.src.src} alt={m.alt} width={m.src.width} height={m.src.height} loading="lazy" decoding="async">
-        : <Picture src={m.src} alt={m.alt} widths={widths} sizes={sizes} formats={['avif', 'webp']} loading="lazy" decoding="async" />}
+        ? <img src={m.src.src} alt={m.alt} lang={other} width={m.src.width} height={m.src.height} loading="lazy" decoding="async">
+        : <Picture src={m.src} alt={m.alt} lang={other} widths={widths} sizes={sizes} formats={['avif', 'webp']} loading="lazy" decoding="async" />}
     </div>
   )}
   {m?.kind === 'ph' && <div class={`life-card-media ph ${m.hue}`} aria-hidden="true"><span class="cap">{m.cap}</span></div>}
   <div class="life-card-body">
-    <p class="life-card-kicker"><span class:list={['tag', e.warm ? 'warm' : 'fill']}>{e.tag}</span>{e.kind && <span class="life-card-kind">{e.kind}</span>}<OriginChip lang={e.lang} /></p>
-    {e.title && <h3 class="life-card-title" lang={e.textLang}>{e.href ? <a href={e.href}>{e.title}</a> : e.title}</h3>}
-    {e.text && <p class="life-card-text" lang={e.textLang}>{!e.title && e.href ? <a class="life-card-textlink" href={e.href}>{e.text}</a> : e.text}</p>}
-    <p class="life-card-foot">
-      <time datetime={e.iso}>{e.dateText}</time>
-      {e.facts.map((f) => <span class="life-card-fact">{f}</span>)}
-      {e.rating !== undefined && <Stars value={e.rating} />}
-      {e.cta && (bare
-        ? <a class="life-card-cta life-card-textlink" href={e.href}>{e.cta} <span aria-hidden="true">→</span></a>
-        : <span class="life-card-cta" aria-hidden="true">{e.cta} →</span>)}
-    </p>
+    <div class="life-card-top">
+      <p class="life-card-kicker"><span class:list={['tag', e.warm ? 'warm' : 'fill']}>{e.tag}</span>{e.kind && <span class="life-card-kind">{e.kind}</span>}</p>
+      {(compact || other) && (
+        <div class="life-card-aside">
+          {compact && <p class="life-card-meta"><LifeCardMeta e={e} lang={lang} /></p>}
+          {other && <OriginChip lang={other} />}
+          {compact && e.cta && (bare
+            ? <a class="life-card-go life-card-textlink" href={e.href} aria-label={e.cta}><span aria-hidden="true">→</span></a>
+            : <span class="life-card-go" aria-hidden="true">→</span>)}
+        </div>
+      )}
+    </div>
+    {e.title && <h3 class="life-card-title" lang={other}>{e.href ? <a href={e.href}>{e.title}</a> : e.title}</h3>}
+    {e.text && <p class="life-card-text" lang={other}>{!e.title && e.href ? <a class="life-card-textlink" href={e.href}>{e.text}</a> : e.text}</p>}
+    {!compact && (
+      <p class="life-card-foot">
+        <span class="life-card-meta"><LifeCardMeta e={e} lang={lang} /></span>
+        {e.cta && (bare
+          ? <a class="life-card-cta life-card-textlink" href={e.href}>{e.cta} <span class="life-card-arrow" aria-hidden="true">→</span></a>
+          : <span class="life-card-cta" aria-hidden="true">{e.cta} <span class="life-card-arrow">→</span></span>)}
+      </p>
+    )}
   </div>
 </article>
