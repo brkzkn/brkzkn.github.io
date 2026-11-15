@@ -1,0 +1,30 @@
+---
+// Life: hero (unchanged composition), category filters, then one chronological timeline grouped by month.
+// /life/ and /tr/life/ render it (ADR-006, src/i18n/translated.ts). Entries come from the posts collection through
+// src/lib/life.ts; the timeline, cards and filter live in src/components/life/LifeTimeline.astro.
+import Base from '../layouts/Base.astro';
+import LifeTimeline from './life/LifeTimeline.astro';
+import { getLifeEntries, lifeCopy, type LifeLang } from '../lib/life';
+
+interface Props { lang: LifeLang }
+const { lang } = Astro.props;
+const c = lifeCopy(lang);
+const { entries, hasSamples, mixedLanguage } = await getLifeEntries(lang);
+---
+<Base title={c.title} description={c.description} originalLang={lang} canonical="/life/" nav="life">
+
+<section class="pagehead">
+  <div class="wrap grid pagehead-life">
+    <div class="span7 col pagehead-text">
+      <h1 class="h1">{c.h1}</h1>
+      <p class="lede">{c.description}{hasSamples && <Fragment>{' '}<span class="mock">{c.sampleNote}</span></Fragment>}</p>
+    </div>
+    <div class="span5 pagehead-photos">
+      <div class="ph r43 sage"><span class="cap">{c.heroCapA}</span></div>
+      <div class="ph r34 plum"><span class="cap">{c.heroCapB}</span></div>
+    </div>
+  </div>
+</section>
+
+<LifeTimeline entries={entries} lang={lang} note={mixedLanguage ? c.originalNote : undefined} />
+</Base>

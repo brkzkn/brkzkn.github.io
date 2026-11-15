@@ -40,7 +40,7 @@ Do this while porting to Astro; none of these belong on the live site. Items mar
 
 ## Open issues from the prototype review
 1. Subscribe form removed from the home sidebar (2026-11-04). **TODO after launch:** pick a provider (Buttondown or Kit), re-add the `sidebar-subscribe` module (CSS was deleted; restore from git history `f284334`), wire the form, add the TR strings.
-2. Life filters visual only (Gear filters work since the 2026-11-12 redesign).
+2. ~~Life filters visual only~~ Life filters work since the 2026-11-13 timeline redesign (ADR-007); Gear since 2026-11-12.
 3. Placeholder images outside the home hero.
 4. TR dictionary does not cover all page copy (by design; content translated at publish time).
 5. Mobile menu is a dropdown; full-screen menu design exists in the original concept.

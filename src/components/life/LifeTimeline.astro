@@ -1,0 +1,60 @@
+---
+// Life timeline: category filter row, live count, month groups on a vertical line, empty state. Rendered by
+// LifePage.astro (real entries) and by the dev review page /dev/life/cards/ (fixtures). The filter is the island
+// src/scripts/life-filters.ts (data-life-* attributes, client-side only, no URL change); without JavaScript every
+// entry is shown with the row widths computed here.
+import LifeCard from './LifeCard.astro';
+import { LIFE_CATEGORIES, groupByMonth, lifeCopy, type LifeEntry, type LifeLang } from '../../lib/life';
+
+interface Props { entries: LifeEntry[]; lang: LifeLang; note?: string }
+const { entries, lang, note } = Astro.props;
+const c = lifeCopy(lang);
+const months = groupByMonth(entries, lang);
+const counts = Object.fromEntries(LIFE_CATEGORIES.map((cat) => [cat.id, entries.filter((e) => e.category === cat.id).length])) as Record<string, number>;
+
+// Outline icons, 24px grid, same stroke as the Gear and About pages. Drawn for this site.
+const icon: Record<string, string> = {
+  grid: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  heart: '<path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.4a4.3 4.3 0 0 1 7.5 2.4C19.5 15.4 12 20 12 20Z"/>',
+  pin: '<path d="M12 21s-6.5-5.7-6.5-10.5a6.5 6.5 0 0 1 13 0C18.5 15.3 12 21 12 21Z"/><circle cx="12" cy="10.5" r="2.3"/>',
+  utensils: '<path d="M6 3v5a2 2 0 0 0 4 0V3"/><path d="M8 3v18"/><path d="M17 21V3c-2.2 1.7-3 4.7-3 8v2h3"/>',
+  ticket: '<path d="M4 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1.5a2.5 2.5 0 0 0 0 5V16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-1.5a2.5 2.5 0 0 0 0-5V8Z"/><path d="M14.5 6.5v1.5M14.5 11.25v1.5M14.5 16v1.5"/>',
+};
+const Svg = (name: string, size = 15) =>
+  `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icon[name]}</svg>`;
+---
+{entries.length === 0 ? (
+<section class="section life-body">
+  <div class="wrap">
+    <div class="journal-empty gear-none"><h2 class="h4">{c.noneH}</h2><p class="small">{c.noneP}</p></div>
+  </div>
+</section>
+) : (
+<section class="section life-body" data-life-root data-one={c.one} data-many={c.many}>
+  <div class="wrap">
+    <div class="life-filterbar"><div class="gear-filters life-filters" role="group" aria-label={c.filterLabel}>
+      <button type="button" class="gear-filter" data-life-filter="all" aria-pressed="true"><span class="gear-filter-icon" set:html={Svg('grid')} />{c.all} <span class="gear-filter-count">({entries.length})</span></button>
+      {LIFE_CATEGORIES.map((cat) => (
+        <button type="button" class="gear-filter" data-life-filter={cat.id} aria-pressed="false"><span class="gear-filter-icon" set:html={Svg(cat.icon)} />{cat[lang]} <span class="gear-filter-count">({counts[cat.id]})</span></button>
+      ))}
+    </div></div>
+    <div class="life-status">
+      <p class="filter-summary" aria-live="polite" data-life-summary>{entries.length === 1 ? c.one : c.many.replace('{n}', String(entries.length))}</p>
+      {note && <p class="tiny life-note">{note}</p>}
+    </div>
+
+    <div class="life-timeline" data-life-timeline>
+      {months.map((g) => (
+        <section class="life-month" data-life-month={g.month} aria-labelledby={`life-month-${g.month}`}>
+          <h2 class="life-month-label" id={`life-month-${g.month}`}><time datetime={g.month}><span aria-hidden="true"><span class="life-month-m">{g.short.split(' ')[0]}</span>{' '}<span class="life-month-y">{g.short.split(' ')[1]}</span></span><span class="sr-only">{g.long}</span></time></h2>
+          <div class="life-cards">
+            {g.cards.map((x) => <LifeCard e={x.e} span={x.span} />)}
+          </div>
+        </section>
+      ))}
+    </div>
+    <div class="journal-empty gear-empty" data-life-empty hidden><h2 class="h4">{c.emptyH}</h2><p class="small">{c.emptyP}</p><button type="button" data-life-reset>{c.emptyBtn} →</button></div>
+  </div>
+</section>
+)}
+<script>import '../../scripts/life-filters.ts';</script>

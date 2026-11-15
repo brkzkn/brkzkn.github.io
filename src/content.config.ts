@@ -15,8 +15,8 @@ const LANGS = ['tr', 'en'] as const;
 //    of the post and is identical in both siblings; `translated: true` marks that a sibling exists;
 //  - entry ids are `<slug>.<suffix>` (e.g. `kadikoy-kalamar.tr`) so siblings never collide. Use
 //    postSlug(entry) / postFileLang(entry) from src/lib/posts.ts rather than parsing ids by hand.
-//  - Phase 1 ships English routes only (ADR-002). Until `/tr/` routes exist, pages pick the `en` file when
-//    present, otherwise the single file, and show the original-language marker from `lang`.
+//  - Pages pick the `en` file when present, otherwise the single file, and show the original-language marker from
+//    `lang`. A real Turkish page asks for the `tr` file first (getPosts('tr'); so far only /tr/life/, ADR-007).
 const platform = z.object({
   id: z.enum(['netflix', 'prime', 'appletv', 'disney', 'mubi', 'cinema']),
   href: z.url().optional(), // without href the chip is a plain label
@@ -69,7 +69,7 @@ const posts = defineCollection({
         creator: z.string().optional(),
         platforms: z.array(platform).optional(), // film and series only
 
-        // restaurant (category: culture)
+        // restaurant (category: culture; on the Life page every restaurant is in the Restaurants category, ADR-007)
         name: z.string().optional(),
         cuisine: z.string().optional(),
         area: z.string().optional(),

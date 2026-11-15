@@ -619,20 +619,12 @@ h2[id]{scroll-margin-top:96px}
 @media(max-width:1000px){.sh-tags{justify-content:flex-start}.sh-diagram{padding:24px}}
 @media(max-width:640px){.sh-hero{min-height:240px}.sh-diagram{grid-template-columns:minmax(0,1fr);padding:20px;gap:12px}.sh-diagram .conn{flex:none;width:1px;height:22px;min-width:0;margin:0 auto}.sh-diagram .conn::after{right:auto;left:-3px;top:auto;bottom:-1px;border:3.5px solid transparent;border-top:6px solid var(--ink)}}
 
-/* life (feed rules scoped to .life-feed so the home feed is untouched) */
+/* life: hero. The timeline below it is in the 2026-11-13 block at the end of this file */
 .pagehead-life{align-items:end}
 .pagehead-text{gap:24px}.pagehead-text .lede{max-width:600px}
 .pagehead-photos{display:grid;grid-template-columns:2fr 1fr;gap:12px;align-items:end}
-.life-feed{padding-top:40px}
-.life-feed .item-body{gap:10px;min-width:0}
-.life-feed .item-meta{gap:10px;flex-wrap:wrap}
-.life-feed .item-text{max-width:520px}
-.life-feed .item h2 a{color:inherit;text-decoration:underline;text-decoration-color:var(--line2);text-underline-offset:4px}
-.life-feed .item h2 a:hover{color:var(--orange)}
-.life-feed .item h2 .unavailable{color:var(--ink)}
-.life-feed .item.milestone .body.item-text{color:var(--ink)}
-@media(max-width:1000px){.pagehead-photos{max-width:420px}.life-feed .item .ph{max-width:360px}}
-@media(max-width:640px){.pagehead-photos{max-width:none}.life-feed .item .ph{max-width:none}}
+@media(max-width:1000px){.pagehead-photos{max-width:420px}}
+@media(max-width:640px){.pagehead-photos{max-width:none}}
 
 /* london-guide */
 .detail-hero.wrap{align-items:end}
@@ -958,3 +950,106 @@ h2[id]{scroll-margin-top:96px}
 @media(max-width:1000px){.gear-hero{padding:40px 0 32px}.gear-hero-text,.gear-hero-media{grid-column:span 12}.gear-hero-media::after{background:linear-gradient(180deg,var(--bg) 0%,transparent 18%)}.gear-hero-text .lede{max-width:600px}}
 @media(max-width:767px){.gear-hero{padding:28px 0 24px}.gear-hero-text .h1{font-size:clamp(38px,11vw,48px)}.gear-hero-text .lede{font-size:19px}.gear-hero-media img,.gear-hero-ph{aspect-ratio:4/3}.gear-filters{gap:8px;padding-top:24px}.gear-filter{min-height:44px;padding:0 14px}.gear-grid{grid-template-columns:minmax(0,1fr);gap:16px;margin-top:20px}.gear-card-body{padding:16px 16px 12px}.gear-card-foot{padding:10px 16px 12px}}
 @media(prefers-reduced-motion:reduce){.gear-card,.gear-media img,.gear-filter,.gear-filter-icon{transition:none}.gear-card:hover .gear-media img{transform:none}}
+
+/* 2026-11-13: Life timeline (ADR-007). Replaces the three-column .life-feed list under the unchanged Life hero.
+   The filter row reuses .gear-filters / .gear-filter; .life-filters only adds the horizontal scroll on phones.
+   .life-timeline carries the one vertical line (it ends with the last visible month, no script needed); each .life-month has a
+   label and a dot on that line. Cards are one component in three families: .life-card.is-compact | .is-standard | .is-featured.
+   data-span (full | half | wide) is written at build time and again by life-filters.ts: half = two neighbours of one shape
+   (data-life-row), wide = alone in its row. Hover is a border change and a 3% image zoom in 200ms on linked cards; none under reduced motion. */
+.life-body{padding-top:0}
+.life-filterbar{padding-top:28px;border-top:1px solid var(--line)}
+.life-filters{padding-top:0;border-top:0}
+.life-status{display:flex;align-items:baseline;justify-content:space-between;gap:4px 24px;flex-wrap:wrap;margin-top:14px}
+.life-status .filter-summary,.life-note{margin:0}
+.life-timeline{--life-label:104px;--life-gap:56px;--life-rail:calc(var(--life-label) + var(--life-gap) / 2);position:relative;display:flex;flex-direction:column;gap:56px;margin-top:40px}
+.life-timeline::before{content:"";position:absolute;left:var(--life-rail);top:10px;bottom:0;width:1px;background:var(--line2)}
+.life-month{position:relative;display:grid;grid-template-columns:var(--life-label) minmax(0,1fr);column-gap:var(--life-gap);align-items:start;min-width:0}
+.life-month-label{font:600 13px/20px var(--sans);letter-spacing:.08em;text-transform:uppercase;text-align:right;white-space:nowrap;color:var(--ink)}
+.life-month-label::after{content:"";position:absolute;left:calc(var(--life-rail) - 5px);top:4.5px;width:11px;height:11px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 4px var(--bg)}
+.life-month-y{color:var(--ink2)}
+.life-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;min-width:0}
+
+/* card: shared parts */
+.life-card{position:relative;display:flex;flex-direction:column;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;overflow:hidden;transition:border-color .2s ease}
+.life-card[data-span=full],.life-card[data-span=wide]{grid-column:1/-1}
+.life-card.is-linked:hover{border-color:var(--line2)}
+.life-card-media{position:relative;flex:none;min-width:0;min-height:0;margin:0;border-radius:0;overflow:hidden;background:var(--placeholder)}
+.life-card-media>picture,.life-card-media>img{position:absolute;inset:0;display:block;width:100%;height:100%}
+.life-card-media img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .2s ease}
+.life-card.is-linked:hover .life-card-media img{transform:scale(1.03)}
+.life-card-body{display:flex;flex-direction:column;gap:10px;flex:1;min-width:0;padding:18px 20px 16px}
+.life-card-kicker{display:flex;align-items:center;flex-wrap:wrap;gap:8px;min-width:0}
+.life-card-kicker .tag{font-size:12px;padding:6px 9px}
+.life-card-kind{font-size:13px;line-height:1.3;color:var(--ink3)}
+.life-card-kicker .origin-chip{position:relative;z-index:2;margin-left:auto}
+.life-card-title{font:400 23px/1.2 var(--serif);letter-spacing:-.01em;color:var(--ink);overflow-wrap:anywhere}
+.life-card-title a,.life-card-textlink{color:inherit}
+.life-card-title a::after,.life-card-textlink::after{content:"";position:absolute;inset:0;z-index:1}
+.life-card.is-linked:hover .life-card-title a{color:var(--orange)}
+.life-card-text{font-size:15px;line-height:1.55;color:var(--ink2);overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.life-card-foot{display:flex;align-items:center;flex-wrap:wrap;gap:6px 16px;margin-top:auto;padding-top:2px;font-size:13px;line-height:1.4;color:var(--ink3);overflow:hidden}
+.life-card-fact{position:relative}
+.life-card-fact::before{content:"";position:absolute;left:-10px;top:50%;width:3px;height:3px;margin-top:-1.5px;border-radius:50%;background:var(--line2)}
+.life-card-cta{margin-left:auto;font-size:14px;color:var(--blue-ink);white-space:nowrap}
+.life-card.is-linked:hover .life-card-cta{color:var(--orange)}
+@supports selector(:has(a)){.life-card:has(a:focus-visible){outline:2px solid var(--blue);outline-offset:3px}.life-card a:focus-visible{outline:none}}
+
+/* A — compact: note, review without a cover. Text first, optional 88px thumbnail */
+.life-card.is-compact{flex-direction:row}
+.life-card.is-compact .life-card-body{gap:8px;padding:16px 20px 14px}
+.life-card.is-compact .life-card-media{order:2;align-self:flex-start;width:88px;aspect-ratio:1;margin:16px 16px 16px 0;border-radius:4px}
+.life-card.is-compact .life-card-title{font-size:21px}
+.life-card.is-compact .life-card-text{max-width:760px}
+.life-card.is-compact.no-title .life-card-text{font:400 19px/1.45 var(--serif);color:var(--ink);-webkit-line-clamp:4}
+
+/* B — standard: album, restaurant, monthly, review with a cover. Picture above the text; beside it when the card is alone in its row */
+.life-card.is-standard .life-card-media{aspect-ratio:3/2}
+.life-card.is-standard.has-media:not(.is-portrait)[data-span=wide]{flex-direction:row}
+.life-card.is-standard.has-media:not(.is-portrait)[data-span=wide] .life-card-media{width:42%;aspect-ratio:auto;min-height:240px}
+.life-card.is-standard.has-media:not(.is-portrait)[data-span=wide] .life-card-body{justify-content:center;padding:24px 28px 22px}
+.life-card.is-standard.has-media:not(.is-portrait)[data-span=wide] .life-card-foot{margin-top:4px}
+.life-card.is-standard.is-portrait{flex-direction:row}
+.life-card.is-standard.is-portrait .life-card-media{align-self:flex-start;width:132px;aspect-ratio:2/3;margin:20px 0 20px 20px;border-radius:3px}
+
+/* C — featured: trip, milestone. Whole row, large cover, strong serif title */
+.life-card.is-featured{flex-direction:row}
+.life-card.is-featured .life-card-media{width:56%;min-height:340px}
+.life-card.is-featured .life-card-body{justify-content:center;gap:14px;padding:32px 36px 28px}
+.life-card.is-featured .life-card-title{font-size:clamp(30px,3vw,40px);line-height:1.1}
+.life-card.is-featured .life-card-text{font-size:17px;line-height:1.6;-webkit-line-clamp:5}
+.life-card.is-featured .life-card-foot{margin-top:6px;font-size:14px}
+.life-card.is-featured:not(.has-media) .life-card-text{max-width:680px}
+.life-card.is-milestone{border-left:3px solid var(--orange)}
+.life-card.is-milestone .life-card-text{color:var(--ink)}
+
+@media(max-width:1000px){
+  .life-timeline{--life-label:52px;--life-gap:36px;gap:48px;margin-top:32px}
+  .life-month-m,.life-month-y{display:block}
+  .life-cards{gap:16px}
+  .life-card.is-featured .life-card-media{width:48%;min-height:300px}
+  .life-card.is-featured .life-card-body{padding:24px 24px 22px}
+}
+@media(max-width:900px){.life-card.is-standard.is-portrait[data-span=half]{grid-column:1/-1}}
+@media(max-width:767px){
+  .life-filterbar{padding-top:24px}
+  .life-filters{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:-6px -40px;padding:6px 40px;scroll-padding-inline:20px}
+  .life-filters::-webkit-scrollbar{display:none}
+  .life-filters .gear-filter{flex:none}
+  .life-timeline{--life-rail:5px;gap:36px;margin-top:28px}
+  .life-month{grid-template-columns:minmax(0,1fr);row-gap:14px;padding-left:28px}
+  .life-month-label{text-align:left}
+  .life-month-m,.life-month-y{display:inline}
+  .life-cards{grid-template-columns:minmax(0,1fr);gap:14px}
+  .life-card-body{padding:16px 16px 14px}
+  .life-card.is-featured,.life-card.is-standard.has-media:not(.is-portrait)[data-span=wide]{flex-direction:column}
+  .life-card.is-featured .life-card-media,.life-card.is-standard.has-media:not(.is-portrait)[data-span=wide] .life-card-media{width:auto;min-height:0;aspect-ratio:3/2}
+  .life-card.is-featured .life-card-body,.life-card.is-standard.has-media:not(.is-portrait)[data-span=wide] .life-card-body{padding:18px 16px 16px}
+  .life-card.is-featured .life-card-title{font-size:28px}
+  .life-card.is-featured .life-card-text{font-size:16px}
+  .life-card.is-standard.is-portrait .life-card-media{width:96px;margin:16px 0 16px 16px}
+  .life-card.is-compact .life-card-body{padding:14px 16px 12px}
+  .life-card.is-compact .life-card-media{width:72px;margin:14px 14px 14px 0}
+}
+@media(max-width:640px){.life-filters{margin-inline:-20px;padding-inline:20px}}
+@media(prefers-reduced-motion:reduce){.life-card,.life-card-media img{transition:none}.life-card.is-linked:hover .life-card-media img{transform:none}}

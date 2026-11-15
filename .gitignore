@@ -12,3 +12,6 @@ backups/
 # Owner content-collection plan and photo inbox (private)
 ICERIK-TOPLAMA-PLANI.md
 _inbox/
+
+# Screenshots and other review output per feature, _outbox/<feature>/ (local only)
+_outbox/

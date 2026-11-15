@@ -54,6 +54,12 @@ photos: [./01.jpg, ./02.jpg]     # 1–4
 
 Restaurants and trips may link to a detail page (`/life/restaurants/<slug>/`, `/life/trips/<slug>/`); the link renders as a visible button, not a small text link. Platform marks are neutral monograms, not brand logos.
 
+## Life page (ADR-007)
+
+`/life/` and `/tr/life/` show posts of the seven types note, album, review, milestone, trip, monthly and restaurant, grouped by the month of `date`, newest first. The page has its own four categories (`src/lib/life.ts`): **family**, **travel** and **culture** are the post's `category`; **restaurant** is every `type: restaurant` post, whatever its `category` (which stays `culture` for the home feed, ADR-005). Posts of other categories do not appear on Life.
+
+The type picks the card family, nothing else: compact (note, review without `cover`), standard (album, restaurant, monthly, review with `cover`), featured (trip, milestone). Picture used: restaurant `photo`, album and note `photos[0]`, review `cover`, trip, milestone and monthly `cover` then `photos[0]`. No picture, no picture block; nothing is invented (no rating, place or link unless the field or the page exists). A monthly diary is dated inside the month it covers, so it sits in that month's group.
+
 ## Separate collections
 
 - `work`: case studies. Fields: client (anonymised), industry, years, role, stack, summary, sections (context, problem, constraints, decisions, boundaries, operations, outcomes, lessons), `featured` (bool, default false) and `featuredOrder` (number), `cover` (optional photo, 56:19; when absent the renderer shows the case study's diagram, `diagram`, an SVG file). Featured, published studies feed the home strip: up to three, see ADR-004.

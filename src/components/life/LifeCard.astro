@@ -1,0 +1,50 @@
+---
+// One Life timeline card. A single component draws all seven post types through three families (is-compact,
+// is-standard, is-featured; mapping in src/lib/life.ts). The parts are the same everywhere: optional media, kicker
+// row (category tag, kind, original language), optional title, text, foot (date, facts, rating, call to action).
+// The title link is stretched over the card, so a card is one link and an entry without a page has none.
+import { Picture } from 'astro:assets';
+import OriginChip from './OriginChip.astro';
+import Stars from './Stars.astro';
+import type { LifeEntry } from '../../lib/life';
+import { rowOf, type LifeSpan } from '../../lib/life-layout';
+
+interface Props { e: LifeEntry; span: LifeSpan }
+const { e, span } = Astro.props;
+const m = e.media;
+const portrait = m?.kind === 'image' && m.portrait;
+const sizes =
+  e.family === 'featured' ? '(max-width: 767px) 100vw, (max-width: 1000px) 50vw, 580px'
+  : e.family === 'compact' ? '88px'
+  : portrait ? '132px'
+  : '(max-width: 767px) 100vw, 500px';
+const widths = e.family === 'featured' ? [600, 900, 1200, 1600] : e.family === 'compact' || portrait ? [176, 264, 400] : [400, 800, 1200];
+// A linked entry with neither title nor text (a photo-only note) still needs its one link: the call to action becomes it.
+const bare = !!e.href && !e.title && !e.text;
+---
+<article
+  class:list={['life-card', `is-${e.family}`, { 'has-media': !!m, 'is-portrait': portrait, 'is-milestone': e.type === 'milestone', 'is-linked': !!e.href, 'no-title': !e.title }]}
+  data-life-card data-life-category={e.category} data-life-family={e.family} data-life-row={rowOf(e.family, m)} data-life-type={e.type} data-span={span}
+>
+  {m?.kind === 'image' && (
+    <div class="life-card-media">
+      {m.src.format === 'svg'
+        ? <img src={m.src.src} alt={m.alt} width={m.src.width} height={m.src.height} loading="lazy" decoding="async">
+        : <Picture src={m.src} alt={m.alt} widths={widths} sizes={sizes} formats={['avif', 'webp']} loading="lazy" decoding="async" />}
+    </div>
+  )}
+  {m?.kind === 'ph' && <div class={`life-card-media ph ${m.hue}`} aria-hidden="true"><span class="cap">{m.cap}</span></div>}
+  <div class="life-card-body">
+    <p class="life-card-kicker"><span class:list={['tag', e.warm ? 'warm' : 'fill']}>{e.tag}</span>{e.kind && <span class="life-card-kind">{e.kind}</span>}<OriginChip lang={e.lang} /></p>
+    {e.title && <h3 class="life-card-title" lang={e.textLang}>{e.href ? <a href={e.href}>{e.title}</a> : e.title}</h3>}
+    {e.text && <p class="life-card-text" lang={e.textLang}>{!e.title && e.href ? <a class="life-card-textlink" href={e.href}>{e.text}</a> : e.text}</p>}
+    <p class="life-card-foot">
+      <time datetime={e.iso}>{e.dateText}</time>
+      {e.facts.map((f) => <span class="life-card-fact">{f}</span>)}
+      {e.rating !== undefined && <Stars value={e.rating} />}
+      {e.cta && (bare
+        ? <a class="life-card-cta life-card-textlink" href={e.href}>{e.cta} <span aria-hidden="true">→</span></a>
+        : <span class="life-card-cta" aria-hidden="true">{e.cta} →</span>)}
+    </p>
+  </div>
+</article>
