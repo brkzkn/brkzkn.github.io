@@ -3,6 +3,9 @@
 // cases the real entries may not cover yet: a month with one entry, a month without a featured card, several standard
 // cards in a row, cards without a picture, ratings in half steps (3.5, 4, 4.5, 5) and none, an entry in another language
 // (the only one with a language chip), a note without a title, a photo-only note (its call to action is the link), and an entry with no page of its own (no link).
+// December 2025 holds the linked cards that are not trip, restaurant or monthly: a note, album, review or milestone links
+// only through the post's own `link` (ADR-007, 2026-11-16), outward (new tab, ↗, hostname) or to a page of this site (→).
+// The example.com addresses are placeholders, like every other text here.
 import type { LifeEntry } from '../lib/life';
 import london from '../content/posts/2025/2025-03-16-london-guide/london-01.jpg';
 import calamari from '../content/posts/2026/2026-10-30-kucuk-liman/note-calamari.jpg';
@@ -27,11 +30,21 @@ export const lifeCardExamples: LifeEntry[] = [
 
   { ...base, id: 'x-review-cover-2', type: 'review', category: 'culture', family: 'standard', month: '2026-02', iso: '2026-02-01', dateText: '1 Feb 2026', tag: 'Culture', kind: 'Series', title: '[Series title]', text, rating: 3.5, media: { kind: 'image', src: poster, alt: '', portrait: true } },
   { ...base, id: 'x-review-cover-3', type: 'review', category: 'culture', family: 'standard', month: '2026-02', iso: '2026-02-01', dateText: '1 Feb 2026', tag: 'Culture', kind: 'Film', title: '[Second poster: two posters share a row]', text: '[A short verdict.]', media: { kind: 'image', src: poster, alt: '', portrait: true } },
-  { ...base, id: 'x-note-bare', type: 'note', category: 'family', family: 'compact', month: '2026-02', iso: '2026-02-01', dateText: '1 Feb 2026', tag: 'Family', text: '', href: '/notes/the-salt-ledger/', cta: 'Read the note', media: { kind: 'image', src: calamari, alt: '[Photo-only note: no title, no text, still one link]', portrait: false } },
+  { ...base, id: 'x-note-bare', type: 'note', category: 'family', family: 'compact', month: '2026-02', iso: '2026-02-01', dateText: '1 Feb 2026', tag: 'Family', text: '', href: '/gear/', cta: 'Open the page', media: { kind: 'image', src: calamari, alt: '[Photo-only note: no title, no text, still one link (a page of this site)]', portrait: false } },
 
   // January: featured cards with and without a picture
   { ...base, id: 'x-trip', type: 'trip', category: 'travel', family: 'featured', month: '2026-01', iso: '2026-01-25', dateText: '23 to 25 January 2026', tag: 'Travel', kind: '3 days', title: '[Trip title]', text, href: '/life/trips/london-guide/', cta: 'Read the guide', media: { kind: 'image', src: london, alt: '', portrait: false } },
   { ...base, id: 'x-milestone-plain', type: 'milestone', category: 'family', family: 'featured', month: '2026-01', iso: '2026-01-18', dateText: '18 Jan 2026', tag: 'Milestone', warm: true, title: '[Milestone without a picture]', text },
   { ...base, id: 'x-milestone', type: 'milestone', category: 'family', family: 'featured', month: '2026-01', iso: '2026-01-10', dateText: '10 Jan 2026', tag: 'Milestone', warm: true, title: '[Milestone with a cover, and a title long enough to wrap onto a second line]', text, media: { kind: 'ph', cap: '[Milestone: cover photo, nobody facing the camera]', hue: 'sage' } },
   { ...base, id: 'x-trip-plain', type: 'trip', category: 'travel', family: 'featured', month: '2026-01', iso: '2026-01-04', dateText: '4 Jan 2026', tag: 'Travel', kind: '1 day', title: '[Trip without a cover]', text, href: '/life/trips/london-guide/', cta: 'Read the guide' },
+
+  // December 2025: cards that link through the post's own `link`
+  { ...base, id: 'x-link-album', type: 'album', category: 'travel', family: 'standard', month: '2025-12', iso: '2025-12-28', dateText: '28 Dec 2025', tag: 'Travel', title: '[Album with an external link]', text, facts: ['[Place]', '4 photos'], href: 'https://example.com/album', external: true, cta: 'example.com', media: { kind: 'ph', cap: '[Album: first photo]', hue: 'sand' } },
+  { ...base, id: 'x-link-album-bare', type: 'album', category: 'family', family: 'standard', month: '2025-12', iso: '2025-12-27', dateText: '27 Dec 2025', tag: 'Family', text: '', href: 'https://example.com/photos', external: true, cta: 'example.com', media: { kind: 'image', src: london, alt: '[Photo-only album with an external link: the call to action is the link]', portrait: false } },
+  { ...base, id: 'x-link-review-cover', type: 'review', category: 'culture', family: 'standard', month: '2025-12', iso: '2025-12-20', dateText: '20 Dec 2025', tag: 'Culture', kind: 'Book', title: '[Poster review with an external link]', text, rating: 4.5, href: 'https://example.com/book', external: true, cta: 'example.com', media: { kind: 'image', src: poster, alt: '', portrait: true } },
+  { ...base, id: 'x-link-review-plain', type: 'review', category: 'culture', family: 'compact', month: '2025-12', iso: '2025-12-14', dateText: '14 Dec 2025', tag: 'Culture', kind: 'Concert', title: '[Compact review with an external link]', text: '[A short verdict.]', rating: 5, href: 'https://example.com/concert', external: true, cta: 'example.com' },
+  { ...base, id: 'x-link-note-untitled', type: 'note', category: 'culture', family: 'compact', month: '2025-12', iso: '2025-12-11', dateText: '11 Dec 2025', tag: 'Culture', text: '[An untitled note with an external link: the text itself is the link.]', href: 'https://example.com/note', external: true, cta: 'example.com' },
+  { ...base, id: 'x-link-note-bare', type: 'note', category: 'family', family: 'compact', month: '2025-12', iso: '2025-12-09', dateText: '9 Dec 2025', tag: 'Family', text: '', href: 'https://example.com/photo', external: true, cta: 'example.com', media: { kind: 'image', src: calamari, alt: '[Photo-only note with an external link: the arrow is the link]', portrait: false } },
+  { ...base, id: 'x-link-note-internal', type: 'note', category: 'culture', family: 'compact', month: '2025-12', iso: '2025-12-06', dateText: '6 Dec 2025', tag: 'Culture', title: '[Note that links to a page of this site]', text: '[A short note.]', href: '/gear/', cta: 'Open the page' },
+  { ...base, id: 'x-link-milestone', type: 'milestone', category: 'family', family: 'featured', month: '2025-12', iso: '2025-12-02', dateText: '2 Dec 2025', tag: 'Milestone', warm: true, title: '[Milestone with an external link]', text, href: 'https://example.com/milestone', external: true, cta: 'example.com' },
 ];

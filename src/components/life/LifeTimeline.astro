@@ -3,13 +3,26 @@
 // LifePage.astro (real entries) and by the dev review page /dev/life/cards/ (fixtures). The filter is the island
 // src/scripts/life-filters.ts (data-life-* attributes, client-side only, no URL change); without JavaScript every
 // entry is shown with the row widths computed here.
-import LifeCard from './LifeCard.astro';
-import { LIFE_CATEGORIES, groupByMonth, lifeCopy, type LifeEntry, type LifeLang } from '../../lib/life';
+//
+// Years (ADR-007, 2026-11-16 amendment). The year of the newest entry is drawn as before: its months sit directly on
+// the timeline, with no year row. Every older year is a native <details>, closed by default, whose <summary> is one quiet
+// row (year, number of entries, chevron); its months are in the HTML and look the same once it is opened, so it works
+// without JavaScript. `collapse={false}` (the dev review page) draws every month flat, so no fixture is hidden.
+// Headings: the year row is a disclosure control, not a heading. Months stay <h2> in every year and their accessible
+// name already carries the year ("March 2025"); cards stay <h3>. Nothing is renumbered.
+// The comma after the year is inline text at font-size 0 (.life-year-sep), not .sr-only: an absolutely positioned
+// span is its own block in Chrome's name computation and gave "2025 , 8 entries". Now it is "2025, 8 entries".
+import LifeMonth from './LifeMonth.astro';
+import { LIFE_CATEGORIES, groupByMonth, groupByYear, lifeCopy, type LifeEntry, type LifeLang } from '../../lib/life';
 
-interface Props { entries: LifeEntry[]; lang: LifeLang; note?: string }
-const { entries, lang, note } = Astro.props;
+interface Props { entries: LifeEntry[]; lang: LifeLang; note?: string; collapse?: boolean }
+const { entries, lang, note, collapse = true } = Astro.props;
 const c = lifeCopy(lang);
 const months = groupByMonth(entries, lang);
+const years = groupByYear(months);
+const open = collapse ? (years[0]?.months ?? []) : months; // drawn directly on the timeline
+const older = collapse ? years.slice(1) : []; // one closed <details> each
+const countText = (n: number) => (n === 1 ? c.one : c.many.replace('{n}', String(n)));
 const counts = Object.fromEntries(LIFE_CATEGORIES.map((cat) => [cat.id, entries.filter((e) => e.category === cat.id).length])) as Record<string, number>;
 
 // Outline icons, 24px grid, same stroke as the Gear and About pages. Drawn for this site.
@@ -19,6 +32,7 @@ const icon: Record<string, string> = {
   pin: '<path d="M12 21s-6.5-5.7-6.5-10.5a6.5 6.5 0 0 1 13 0C18.5 15.3 12 21 12 21Z"/><circle cx="12" cy="10.5" r="2.3"/>',
   utensils: '<path d="M6 3v5a2 2 0 0 0 4 0V3"/><path d="M8 3v18"/><path d="M17 21V3c-2.2 1.7-3 4.7-3 8v2h3"/>',
   ticket: '<path d="M4 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1.5a2.5 2.5 0 0 0 0 5V16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-1.5a2.5 2.5 0 0 0 0-5V8Z"/><path d="M14.5 6.5v1.5M14.5 11.25v1.5M14.5 16v1.5"/>',
+  chevron: '<path d="m6 9 6 6 6-6"/>',
 };
 const Svg = (name: string, size = 15) =>
   `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icon[name]}</svg>`;
@@ -39,19 +53,24 @@ const Svg = (name: string, size = 15) =>
       ))}
     </div></div>
     <div class="life-status">
-      <p class="filter-summary" aria-live="polite" data-life-summary>{entries.length === 1 ? c.one : c.many.replace('{n}', String(entries.length))}</p>
+      <p class="filter-summary" aria-live="polite" data-life-summary>{countText(entries.length)}</p>
       {note && <p class="tiny life-note">{note}</p>}
     </div>
 
     <div class="life-timeline" data-life-timeline>
-      {months.map((g) => (
-        <section class="life-month" data-life-month={g.month} aria-labelledby={`life-month-${g.month}`}>
-          <h2 class="life-month-label" id={`life-month-${g.month}`}><time datetime={g.month}><span aria-hidden="true"><span class="life-month-m">{g.short.split(' ')[0]}</span>{' '}<span class="life-month-y">{g.short.split(' ')[1]}</span></span><span class="sr-only">{g.long}</span></time></h2>
-          <div class="life-cards">
-            {g.cards.map((x) => <LifeCard e={x.e} span={x.span} lang={lang} />)}
-          </div>
-        </section>
-      ))}
+      {open.map((g) => <LifeMonth g={g} lang={lang} />)}
+      {older.length > 0 && (
+        <div class="life-years" data-life-years>
+          {older.map((y) => (
+            <details class="life-year" id={`life-year-${y.year}`} data-life-year={y.year}>
+              <summary class="life-year-summary"><span class="life-year-name">{y.year}<span class="life-year-sep">, </span></span><span class="life-year-row"><span class="life-year-count" data-life-year-count>{countText(y.count)}</span><span class="life-year-chevron" set:html={Svg('chevron', 16)} /></span></summary>
+              <div class="life-year-months">
+                {y.months.map((g) => <LifeMonth g={g} lang={lang} />)}
+              </div>
+            </details>
+          ))}
+        </div>
+      )}
     </div>
     <div class="journal-empty gear-empty" data-life-empty hidden><h2 class="h4">{c.emptyH}</h2><p class="small">{c.emptyP}</p><button type="button" data-life-reset>{c.emptyBtn} →</button></div>
   </div>

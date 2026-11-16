@@ -17,6 +17,12 @@ const LANGS = ['tr', 'en'] as const;
 //    postSlug(entry) / postFileLang(entry) from src/lib/posts.ts rather than parsing ids by hand.
 //  - Pages pick the `en` file when present, otherwise the single file, and show the original-language marker from
 //    `lang`. A real Turkish page asks for the `tr` file first (getPosts('tr'); so far only /tr/life/, ADR-007).
+const POST_TYPES = [
+  'note', 'album', 'writing', 'project', 'milestone',
+  'review', 'restaurant', 'trip', 'monthly', 'link',
+] as const;
+type PostType = (typeof POST_TYPES)[number];
+
 const platform = z.object({
   id: z.enum(['netflix', 'prime', 'appletv', 'disney', 'mubi', 'cinema']),
   href: z.url().optional(), // without href the chip is a plain label
@@ -39,10 +45,11 @@ const posts = defineCollection({
     z
       .object({
         title: z.string().optional(), // optional for note / album
-        type: z.enum([
-          'note', 'album', 'writing', 'project', 'milestone',
-          'review', 'restaurant', 'trip', 'monthly', 'link',
-        ]).default('note'),
+        // How the post is drawn. Optional in frontmatter: a post without `type` is an `album` when it has no title and
+        // at least one photo in `photos`, otherwise a `note` (the transform below). A written type always wins, and
+        // nothing else is inferred: a titled post is not a `writing` unless it says so. Consumers always get a value.
+        // Resolved per file: translated siblings must agree on title and photos, or write the type.
+        type: z.enum(POST_TYPES).optional(),
         category: z.enum(['work', 'projects', 'travel', 'culture', 'restaurant', 'family', 'gear', 'personal']), // what the post is about
         date: z.coerce.date(),
         lang: z.enum(LANGS), // original language of the post
@@ -56,11 +63,11 @@ const posts = defineCollection({
             lng: z.number().optional(),
           })
           .optional(),
-        photos: z.array(image()).default([]), // trips take 1-4
+        photos: z.array(image()).default([]), // trips take up to 4
         cover: image().optional(), // trips, writing; film/series poster (2:3); device product image
         alt: z.array(z.string()).default([]), // optional alt text per photo, same order as `photos`
         rating: z.number().min(0.5).max(5).multipleOf(0.5).optional(), // review, restaurant: the owner's own score, half steps
-        link: z.string().optional(), // detail page route (restaurant, trip, album) or external URL for type: link
+        link: z.string().optional(), // a site route ("/gear/") or an http(s) URL. type: link: the source; project: its log; review: its title link on Home; restaurant, trip: replaces the detail route on Home; on Life: the one link of a note, album, review or milestone card (ADR-007, amended 2026-11-16). Full list: docs/content-model.md, "Where `link` is read"
         draft: z.boolean().default(false),
         sample: z.boolean().default(false), // sample content, tracked for the launch cleanup (docs/roadmap.md)
 
@@ -92,6 +99,12 @@ const posts = defineCollection({
         if (d.type === 'trip') need(d.destination, 'destination', 'trip posts need a destination');
         if (d.type === 'review') need(d.subject, 'subject', 'review posts need a subject (Book, Film, ...)');
         if (d.type === 'trip' && d.photos.length > 4) need(false, 'photos', 'trips take at most 4 photos');
+      })
+      // Resolve the type last, so the checks above only ever judge a type the post wrote itself (an inferred note or
+      // album has no required fields) and every consumer reads a plain enum value, never undefined.
+      .transform((d) => {
+        const type: PostType = d.type ?? (!d.title && d.photos.length > 0 ? 'album' : 'note');
+        return { ...d, type };
       }),
 });
 

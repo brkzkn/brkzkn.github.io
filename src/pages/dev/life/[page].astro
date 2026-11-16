@@ -1,6 +1,7 @@
 ---
 // Dev-only review page: the Life timeline drawn from fixtures (src/data/life-card-examples.ts) by the same
 // LifeTimeline and LifeCard components as /life/, so every card family and layout case can be checked in one place.
+// `collapse={false}`: older years are not folded into <details> here, so every fixture stays visible.
 // Absent from production builds.
 import Base from '../../../layouts/Base.astro';
 import LifeTimeline from '../../../components/life/LifeTimeline.astro';
@@ -17,5 +18,5 @@ export function getStaticPaths() {
   <h1 class="h2" lang="tr">Life kart aileleri.</h1>
   <p class="small lede-600" lang="tr">Yedi post tipi, üç kart ailesi (compact, standard, featured) ve yerleşim durumları tek sayfada. Buradaki kartlar Life sayfasıyla aynı kodla çizilir. Köşeli parantez içindeki her metin örnektir; içerik değildir.</p>
 </div></section>
-<LifeTimeline entries={lifeCardExamples} lang="en" />
+<LifeTimeline entries={lifeCardExamples} lang="en" collapse={false} />
 </Base>

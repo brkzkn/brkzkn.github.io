@@ -35,7 +35,7 @@ const related = sec('Related')?.list ?? [];
     <dl class="kv stacked">
       <dt>Destination</dt><dd>{[d.destination, d.country].filter(Boolean).join(', ')}</dd>
       {d.dates && <><dt>Dates</dt><dd>{d.dates}</dd></>}
-      {d.days && <><dt>Duration</dt><dd>{d.days} days, {nights} nights</dd></>}
+      {d.days && <><dt>Duration</dt><dd>{d.days} day{d.days === 1 ? '' : 's'}{!!nights && `, ${nights} night${nights === 1 ? '' : 's'}`}</dd></>}
       {facts.map(([k, v]) => <><dt>{k}</dt><dd>{v}</dd></>)}
     </dl>
   </div>

@@ -1066,3 +1066,55 @@ h2[id]{scroll-margin-top:96px}
 }
 @media(max-width:640px){.life-filters{margin-inline:-20px;padding-inline:20px}}
 @media(prefers-reduced-motion:reduce){.life-card,.life-card-media img{transition:none}.life-card.is-linked:hover .life-card-media img{transform:none}}
+
+/* 2026-11-15: cases the Life sample content exposed. A diary without pictures has no collage column on the home feed; a one-day trip is one day card at a reading width, not a third of the row. */
+.fe-monthly.no-collage{grid-template-columns:minmax(0,1fr)}
+.g3:has(>.day-card:only-child){grid-template-columns:minmax(0,720px)}
+
+/* 2026-11-16: the label of an external Life card is a hostname, which can be longer than a narrow card foot (a poster card at 390px). It wraps there instead of being cut at the card edge with its arrow. */
+.life-card.is-external .life-card-cta{min-width:0;white-space:normal;overflow-wrap:anywhere;text-align:right}
+
+/* 2026-11-16: Life timeline, older years (ADR-007 amendment). The newest entry's year is drawn as before; every older year is a
+   native <details class="life-year"> inside .life-years, closed by default. Its <summary> is one quiet row on the same two columns
+   as a month: the year in the label column (serif), a hollow ring on the vertical line where a month has its orange dot, and a
+   hairline box with the entry count and a chevron in the card column. Lighter than a card: no surface, no orange. Under 768px
+   the year moves into the box. The line still belongs to .life-timeline, so it runs through the year rows, open or closed.
+   Only the chevron moves (180 degrees, 200ms; not at all under reduced motion).
+   --life-year-h is the row height; it sits on .life-timeline because the line (its ::before) reads it too.
+   .life-year-sep is the comma after the year, kept inline at font-size 0 so the row's accessible name is "2025, 8 entries". */
+.life-timeline{--life-year-h:46px}
+.life-years{display:flex;flex-direction:column;gap:14px;min-width:0}
+.life-year{position:relative;min-width:0;scroll-margin-top:96px} /* as h2[id], which the month headings follow */
+.life-year-summary{display:grid;grid-template-columns:var(--life-label) minmax(0,1fr);column-gap:var(--life-gap);align-items:center;min-height:var(--life-year-h);list-style:none;border-radius:6px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.life-year-summary::-webkit-details-marker{display:none}
+.life-year-summary::before{content:"";position:absolute;left:calc(var(--life-rail) - 5px);top:calc((var(--life-year-h) - 11px) / 2);z-index:1;box-sizing:border-box;width:11px;height:11px;border-radius:50%;background:var(--bg);border:1.5px solid color-mix(in srgb,var(--ink3) 70%,var(--line2));box-shadow:0 0 0 4px var(--bg)}
+.life-year-name{font:400 23px/1 var(--serif);letter-spacing:-.01em;text-align:right;color:var(--ink)}
+.life-year-sep{font-size:0}
+.life-year-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0;min-height:var(--life-year-h);padding:0 16px 0 18px;border:1px solid var(--line);border-radius:6px;transition:border-color .2s ease}
+.life-year-count{font-size:14px;line-height:1.4;color:var(--ink2)}
+.life-year-chevron{display:inline-flex;flex:none;color:var(--ink3);transition:transform .2s ease,color .2s ease}
+.life-year[open]>.life-year-summary .life-year-chevron{transform:rotate(180deg)}
+.life-year-summary:hover .life-year-row{border-color:var(--ink3)}
+.life-year-summary:hover .life-year-chevron{color:var(--ink)}
+.life-year-summary:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+.life-year-months{display:flex;flex-direction:column;gap:52px;min-width:0;padding:32px 0 26px}
+@media(max-width:1000px){
+  .life-year-name{font-size:21px}
+  .life-year-months{gap:44px;padding:28px 0 22px}
+}
+@media(max-width:767px){
+  .life-years{gap:12px}
+  .life-year-summary{display:flex;gap:10px;margin-left:28px;padding:0 12px 0 15px;border:1px solid var(--line);transition:border-color .2s ease}
+  .life-year-summary:hover{border-color:var(--ink3)}
+  .life-year-name{text-align:left}
+  .life-year-row{flex:1;min-height:0;padding:0;border:0}
+  .life-year-months{gap:32px;padding:20px 0 18px}
+}
+@supports selector(:has(a)){
+  /* the line starts at the first ring when a filter leaves no month of the newest year, and an open last year adds no space under its last month */
+  .life-timeline:not(:has(>.life-month:not([hidden])))::before{top:calc(var(--life-year-h) / 2)}
+  .life-year:not(:has(~.life-year:not([hidden]))) .life-year-months{padding-bottom:0}
+  /* and it ends at the ring of the last visible year while that year is closed: the short piece under the ring is covered */
+  .life-year:not([open]):not(:has(~.life-year:not([hidden])))>.life-year-summary::after{content:"";position:absolute;left:calc(var(--life-rail) - 2px);top:calc(var(--life-year-h) / 2);bottom:0;width:5px;background:var(--bg)}
+}
+@media(prefers-reduced-motion:reduce){.life-year-row,.life-year-summary,.life-year-chevron{transition:none}}

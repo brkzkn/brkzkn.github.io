@@ -445,7 +445,7 @@ export const feedTypeExamples: FeedExampleGroup[] = [
  {
   "type": "album",
   "use": "Sadece fotoğraf: 1 ila 4 fotoğraf, kısa açıklama, yer. Yemek (Restaurant) ve gezi (Trip) kayıtları artık ayrı türler; albüm bunların dışındaki anlar içindir. Fotoğrafa tıklayınca görüntüleyici açılır.",
-  "fields": "Zorunlu: photos (1–4), caption, place. Opsiyonel: title, href + linkLabel (varsa belirgin düğme olarak çıkar).",
+  "fields": "Zorunlu: photos (1–4), caption. Opsiyonel: title, place, href + linkLabel (varsa belirgin düğme olarak çıkar).",
   "variants": [
    {
     "label": "1 foto",

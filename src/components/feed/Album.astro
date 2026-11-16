@@ -3,7 +3,9 @@ import AlbumGrid from './AlbumGrid.astro';
 import CtaRow from './CtaRow.astro';
 const { entry: e } = Astro.props;
 const n = e.photos.length;
+// An album may have neither a title nor a place (an untitled photo post is an album by inference, docs/content-model.md):
+// then the photo group has no label and the meta line starts with the photo count, with no empty slot before it.
 ---
 {e.title && <h2 class="h4">{e.title}</h2>}<p class="fe-caption" lang={e.language}>{e.caption}</p>
-<AlbumGrid entry={e} name={e.title || e.place} />
-<p class="fe-meta tiny"><span>{e.place}</span><span>{n} photo{n === 1 ? '' : 's'}</span></p><CtaRow href={e.href} label={e.linkLabel} />
+<AlbumGrid entry={e} name={e.title || e.place || undefined} />
+<p class="fe-meta tiny">{e.place && <span>{e.place}</span>}<span>{n} photo{n === 1 ? '' : 's'}</span></p><CtaRow href={e.href} label={e.linkLabel} />

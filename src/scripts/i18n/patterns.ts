@@ -27,7 +27,7 @@ export function translatePattern(t: string): string | null {let m;
  if(m=t.match(/^Showing (\d+) of (\d+) entries$/))return `${m[2]} içerikten ${m[1]} tanesi gösteriliyor`;
  if(m=t.match(/^(\d+) photos?$/))return `${m[1]} fotoğraf`;
  if(m=t.match(/^(\d+) min read$/))return `${m[1]} dk okuma`;
- if(m=t.match(/^(Finished |Watched |Visited )?(\d{1,2} )?(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)( \d{4})?$/)){const out=(m[2]||'')+trMonths[enMonths.indexOf(m[3])]+(m[4]||'');return m[1]?({'Finished ':'Bitirildi: ','Watched ':'İzlendi: ','Visited ':'Gidildi: '}[m[1]])+out:out}
+ if(m=t.match(/^(Finished |Watched |Visited |Heard )?(\d{1,2} )?(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)( \d{4})?$/)){const out=(m[2]||'')+trMonths[enMonths.indexOf(m[3])]+(m[4]||'');return m[1]?({'Finished ':'Bitirildi: ','Watched ':'İzlendi: ','Visited ':'Gidildi: ','Heard ':'Dinlendi: '}[m[1]])+out:out}
  if(m=t.match(/^(\d{1,2}) to (\d{1,2}) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{4})$/))return `${m[1]}–${m[2]} ${trMonths[enMonths.indexOf(m[3])]} ${m[4]}`
  if(m=t.match(/^(\d+) days?$/))return `${m[1]} gün`
  if(m=t.match(/^Price level (\d) of 4$/))return `Fiyat seviyesi ${m[1]} / 4`

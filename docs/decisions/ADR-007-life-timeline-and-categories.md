@@ -41,7 +41,7 @@ ADR-005 decided that restaurants live under the culture category and rejected a 
 - Sample restaurants are no longer held back from the Life index: the general `sample` gate in `getPosts` (PUBLIC_PREVIEW) is the only rule, as for every other entry.
 - Entries of other categories (personal, gear, work, projects) still do not appear on Life.
 - A card shows the date the timeline sorts by (`date`). A restaurant's `visited` date stays on its detail page.
-- A card links only when the entry has a page: trip, restaurant and monthly go to their existing detail routes; other published entries go to `/notes/<slug>/`; sample notes have no link.
+- A card links only when the entry has a page: trip, restaurant and monthly go to their existing detail routes; other published entries go to `/notes/<slug>/`; sample notes have no link. (Superseded for the other entries by the 2026-11-16 amendment below.)
 - The dev-only page `/dev/life/cards/` draws fixtures with the same components, for the layout cases the real entries do not cover yet.
 
 ## Alternatives considered
@@ -50,3 +50,28 @@ ADR-005 decided that restaurants live under the culture category and rejected a 
 - **A separate `lifeCategory` frontmatter field:** a second topic field next to `category` and one more choice at posting time, against the low-friction rule; one more value in the existing field is enough.
 - **Seven card designs, one per type:** more to maintain and no clearer for the reader than three sizes.
 - **Masonry or dense packing:** fills every gap but breaks reading order inside a month.
+
+## Amendment, 2026-11-16: which cards link
+
+Owner decision after reviewing the sample timeline: detail pages on Life exist for restaurants and trips; the other card types have none, and if such a card links at all it is an outward link taken from the post.
+
+- trip, restaurant and monthly keep their detail routes (`/life/trips/<slug>/`, `/life/restaurants/<slug>/`, `/life/culture/<yyyy-mm>/`). The monthly diary page already exists, so its card keeps its link.
+- note, album, review and milestone link only through the post's own `link` field and have no link without it. Life no longer links to `/notes/<slug>/`, and the special case for sample notes is gone: sample and real entries behave the same. The `/notes/<slug>/` pages are not removed; Home and RSS still use them.
+- A `link` that starts with `http://` or `https://` is external: it opens in a new tab with `rel="noopener noreferrer"` (the convention of the social links, the About page and the home feed's shared link and platform chips), the call to action shows the hostname without "www." and an outward arrow (↗), and the card's one anchor ends its accessible name with the hostname and "opens in a new tab". A `link` that starts with `/` is a page of this site: same tab, the usual arrow, the label "Open the page". Any other value is ignored (`lifeLink()` in `src/lib/life.ts`).
+- A compact card has no call-to-action label, only the arrow, as before; on an external compact card the arrow is ↗ and the hostname is in the link's accessible name.
+- Consequence, accepted and not solved here: card text is clamped (two to four lines). Without the `/notes/` link, a note longer than its clamp cannot be read in full from Life.
+- Decided the same day: a post without `type`, without a title and with at least one photo is an album (schema, `docs/content-model.md`, "Inferred type"), so an untitled photo note is drawn as a standard photo card, not a compact note.
+
+## Amendment, 2026-11-16: older years are collapsed
+
+Owner request: with every month on one page the timeline is long and keeps growing; fold it at year level. The page design is otherwise closed, so this adds one quiet row per older year and changes nothing else.
+
+- **Grouping rule.** Months are grouped by year (`groupByYear()` in `src/lib/life.ts`). The year of the newest entry is drawn exactly as before: no year row, its months directly on the timeline, open. It is the newest entry's year, not the calendar year, because the site is static: in January the page would otherwise open on an empty year until the first post.
+- **Older years are native `<details>`, closed by default.** One `<details class="life-year">` per year inside `.life-years`; the `<summary>` shows the year, the number of entries in it (the page's own count words: "8 entries", "1 entry", "8 içerik") and a chevron. All cards are in the HTML and the element opens and closes without JavaScript. Inside, the months look exactly as they do in the newest year (`LifeMonth.astro` draws both).
+- **Filter.** The count in a year row is the number of entries of that year that match the selected category; a year with none is hidden; months inside are re-packed as before, whether the year is open or closed. A filter never opens or closes a year: the reader's choice is kept. The page count line counts every matching entry, including those in closed years, so "8 entries" can be shown above a page whose visible cards are fewer; the year rows carry the rest. The empty state and its reset button are unchanged.
+- **Hash.** A URL hash that points inside a closed year (month headings have ids such as `life-month-2025-03`; a year is `life-year-2025`) opens that year and scrolls to the target, on load and on `hashchange` (a few lines in `src/scripts/life-filters.ts`). If the selected category hides the target (its year or its month has no matching entry), the filter goes back to All first; otherwise the year would be opened where the reader cannot see it. Without JavaScript this depends on the browser.
+- **The line.** The vertical line still belongs to `.life-timeline`, so it runs through the year rows whether they are open or closed. A year row sits on the same two columns as a month: the year in the label column, a hollow ring on the line where a month has its orange dot, the count and chevron in a hairline box in the card column; under 768px the year moves into the box. The line ends at the ring of the last year while that year is closed, and with the last month when it is open.
+- **Headings.** The year row is a disclosure control, not a heading. Month headings stay `<h2>` in every year and their accessible name already carries the year ("March 2025"); card titles stay `<h3>`. Nothing is renumbered, on Life or elsewhere. The summary's accessible name is "2025, 8 entries": the comma is inline text at `font-size:0` (`.life-year-sep`), because a `.sr-only` span is absolutely positioned and Chrome then computes "2025 , 8 entries". The count inside it is not a live region: after a filter change only the page count line is announced.
+- **Dev review page.** `/dev/life/cards/` passes `collapse={false}` to `LifeTimeline`, which draws every month flat, so no fixture is hidden behind a closed year.
+- Rejected: a year heading with a script-driven toggle (needs JavaScript and ARIA for what `<details>` does natively); collapsing months (too many rows, and the newest months are the page); pagination by year (new routes, and the category filter would no longer see the whole timeline); remembering the open years in `localStorage` (state the reader did not ask for).
+- Sample content: seven sample posts dated 2025 were added (`src/content/posts/2025/`, all `sample: true`) so that the 2025 row has several months to show. They follow the same launch rule as every other sample.

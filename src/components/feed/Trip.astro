@@ -8,4 +8,4 @@ const n = e.photos.length;
 <p class="fe-trip-meta tiny"><span>{e.dates}</span>{e.days && <span>{e.days}</span>}</p>
 <p class="fe-caption" lang={e.language}>{e.caption}</p>
 <AlbumGrid entry={e} name={e.destination} />
-<CtaRow href={e.href} label={e.linkLabel}><span class="tiny">{n} photo{n === 1 ? '' : 's'}</span></CtaRow></div>
+<CtaRow href={e.href} label={e.linkLabel}>{n > 0 && <span class="tiny">{n} photo{n === 1 ? '' : 's'}</span>}</CtaRow></div>

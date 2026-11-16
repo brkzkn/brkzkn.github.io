@@ -108,12 +108,14 @@ export function postToEntry(p: Post): FeedEntry {
       break;
     case 'review': {
       const subject = d.subject ?? 'Review';
-      const meta = subject === 'Book' ? `Finished ${fullDate(e)}` : subject === 'Device' ? 'Added to my gear' : `Watched ${fullDate(e)}`;
+      const verb: Record<string, string> = { Book: 'Finished', Exhibition: 'Visited', Concert: 'Heard' };
+      const meta = subject === 'Device' ? 'Added to my gear' : `${verb[subject] ?? 'Watched'} ${fullDate(e)}`;
       Object.assign(e, {
         subject, title: d.title, creator: d.creator, cover: img(d.cover), rating: d.rating, ratingMax: 5, meta, body: lede,
         platforms: d.platforms, recommend: plainText(b.sections.get('recommend') ?? '') || undefined,
         href: d.link, linkLabel: subject === 'Device' ? 'Full note on the gear page' : undefined,
-        fictional: d.sample && subject === 'Film' ? 'Fictional film and director, sample content.' : d.sample && subject === 'Book' && d.creator ? 'Fictional book and author, sample content.' : undefined,
+        fictional: !d.sample ? undefined : subject === 'Film' ? 'Fictional film and director, sample content.' : subject === 'Book' && d.creator ? 'Fictional book and author, sample content.'
+          : subject === 'Series' ? 'Fictional series, sample content.' : subject === 'Exhibition' ? 'Fictional exhibition, sample content.' : subject === 'Concert' ? 'Fictional concert, sample content.' : undefined,
       });
       break;
     }

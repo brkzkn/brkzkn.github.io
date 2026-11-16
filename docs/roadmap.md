@@ -70,7 +70,7 @@ Audit date 2026-11-04. Method: source search of `src/`, `public/`, `.github/` ag
 ### Safe to ship
 - Header banner and "V4.2 preview" footer: gated by `PUBLIC_PREVIEW !== 'false'` in `Base.astro` and `Footer.astro`; index copy and RSS also gated.
 - `/dev/feed-types/`: `getStaticPaths` returns `[]` in PROD and the sitemap filters `/dev/`.
-- No analytics or trackers found. External requests: Google Fonts only (`Base.astro`). External content links are `github.com/esphome/esphome` (real) in a sample post, `netflix.com` and `example.com/queues` only in `src/data/feed-type-examples.ts` (dev page).
+- No analytics or trackers found. External requests: Google Fonts only (`Base.astro`). External content links are `github.com/esphome/esphome` (real) in a sample post, `netflix.com` and `example.com/queues` only in `src/data/feed-type-examples.ts` (dev page). Since 2026-11-16 three sample posts (`strings-at-harbiye`, `a-map-of-small-winds`, `the-atlas`) carry fictional `https://example.com/...` links, drawn on `/life/`, `/tr/life/` and, for the two reviews, as the title link on Home; `src/data/life-card-examples.ts` (dev page) has more. All are `sample: true` or fixtures and go with the samples.
 - No `.html` hrefs or `href="#"` in ported markup. `robots.txt` and `CNAME` (`burakozkan.net`) correct; sitemap URL matches `site`. `mailto:hello@burakozkan.net` is real-looking: owner must confirm the mailbox exists.
 - `.env` and `.env.production` are git-ignored, so the CI value in `deploy.yml` is the only control that matters.
 

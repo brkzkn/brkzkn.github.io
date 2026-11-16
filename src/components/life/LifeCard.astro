@@ -3,11 +3,14 @@
 // is-standard, is-featured; mapping in src/lib/life.ts). The parts are the same everywhere: optional media, kicker
 // row (category tag, kind), optional title, text, foot (date, facts, rating, call to action). A compact card has no foot:
 // its metadata sits at the end of the kicker row. The language chip appears only when the text is not in the page's language.
-// The title link is stretched over the card, so a card is one link and an entry without a page has none.
+// The title link is stretched over the card, so a card is one link and an entry without a link has none. A link that
+// leaves the site (e.external: the post's own `link`) opens in a new tab with the attributes of the social links and the
+// home feed's shared link, shows ↗ instead of → and is labelled with its hostname; the one anchor says so to a screen
+// reader, because the visible call to action is decoration (aria-hidden) except in the bare case, where it is the link.
 import { Picture } from 'astro:assets';
 import OriginChip from './OriginChip.astro';
 import LifeCardMeta from './LifeCardMeta.astro';
-import type { LifeEntry, LifeLang } from '../../lib/life';
+import { lifeCopy, type LifeEntry, type LifeLang } from '../../lib/life';
 import { rowOf, type LifeSpan } from '../../lib/life-layout';
 
 interface Props { e: LifeEntry; span: LifeSpan; lang: LifeLang }
@@ -25,9 +28,17 @@ const sizes =
 const widths = e.family === 'featured' ? [600, 900, 1200, 1600] : e.family === 'compact' || portrait ? [176, 264, 400] : [400, 800, 1200];
 // A linked entry with neither title nor text (a photo-only note) still needs its one link: the call to action becomes it.
 const bare = !!e.href && !e.title && !e.text;
+const ext = !!e.href && !!e.external;
+const out = ext ? { target: '_blank', rel: 'noopener noreferrer' } : {};
+const arrow = ext ? '↗' : '→';
+const newTab = lifeCopy(lang).newTab;
+// Appended, visually hidden, to the title or text link of an external card: "<title>, example.com, opens in a new tab".
+// Note text that already ends its sentence takes a space, not a second mark: "... bought it back. example.com, opens ...".
+const where = ext ? `, ${e.cta}, ${newTab}` : '';
+const whereText = ext && /[.!?…]$/.test(e.text) ? where.slice(1) : where;
 ---
 <article
-  class:list={['life-card', `is-${e.family}`, { 'has-media': !!m, 'is-portrait': portrait, 'is-milestone': e.type === 'milestone', 'is-linked': !!e.href, 'no-title': !e.title }]}
+  class:list={['life-card', `is-${e.family}`, { 'has-media': !!m, 'is-portrait': portrait, 'is-milestone': e.type === 'milestone', 'is-linked': !!e.href, 'is-external': ext, 'no-title': !e.title }]}
   data-life-card data-life-category={e.category} data-life-family={e.family} data-life-row={rowOf(e.family, m)} data-life-type={e.type} data-span={span}
 >
   {m?.kind === 'image' && (
@@ -46,19 +57,19 @@ const bare = !!e.href && !e.title && !e.text;
           {compact && <p class="life-card-meta"><LifeCardMeta e={e} lang={lang} /></p>}
           {other && <OriginChip lang={other} />}
           {compact && e.cta && (bare
-            ? <a class="life-card-go life-card-textlink" href={e.href} aria-label={e.cta}><span aria-hidden="true">→</span></a>
-            : <span class="life-card-go" aria-hidden="true">→</span>)}
+            ? <a class="life-card-go life-card-textlink" href={e.href} {...out} aria-label={ext ? `${e.cta}, ${newTab}` : e.cta}><span aria-hidden="true">{arrow}</span></a>
+            : <span class="life-card-go" aria-hidden="true">{arrow}</span>)}
         </div>
       )}
     </div>
-    {e.title && <h3 class="life-card-title" lang={other}>{e.href ? <a href={e.href}>{e.title}</a> : e.title}</h3>}
-    {e.text && <p class="life-card-text" lang={other}>{!e.title && e.href ? <a class="life-card-textlink" href={e.href}>{e.text}</a> : e.text}</p>}
+    {e.title && <h3 class="life-card-title" lang={other}>{e.href ? <a href={e.href} {...out}>{e.title}{where && <span class="sr-only" lang={other && lang}>{where}</span>}</a> : e.title}</h3>}
+    {e.text && <p class="life-card-text" lang={other}>{!e.title && e.href ? <a class="life-card-textlink" href={e.href} {...out}>{e.text}{whereText && <span class="sr-only" lang={other && lang}>{whereText}</span>}</a> : e.text}</p>}
     {!compact && (
       <p class="life-card-foot">
         <span class="life-card-meta"><LifeCardMeta e={e} lang={lang} /></span>
         {e.cta && (bare
-          ? <a class="life-card-cta life-card-textlink" href={e.href}>{e.cta} <span class="life-card-arrow" aria-hidden="true">→</span></a>
-          : <span class="life-card-cta" aria-hidden="true">{e.cta} <span class="life-card-arrow">→</span></span>)}
+          ? <a class="life-card-cta life-card-textlink" href={e.href} {...out}>{e.cta} <span class="life-card-arrow" aria-hidden="true">{arrow}</span>{ext && <span class="sr-only">, {newTab}</span>}</a>
+          : <span class="life-card-cta" aria-hidden="true">{e.cta} <span class="life-card-arrow">{arrow}</span></span>)}
       </p>
     )}
   </div>

@@ -1,5 +1,5 @@
 ---
-// 1-4 photos as buttons that open the lightbox (src/scripts/feed-lightbox.ts reads data-photos).
+// 1-4 photos as buttons that open the lightbox (src/scripts/feed-lightbox.ts reads data-photos). Nothing without photos.
 import { fixSrc } from '../../lib/feed';
 import Img from './Img.astro';
 const { entry: e, name } = Astro.props;
@@ -7,4 +7,4 @@ const n = e.photos.length;
 const label = (i: number, alt: string) => `Open photo ${i} of ${n}: ${alt}`;
 const data = JSON.stringify(e.photos.map((p: any) => ({ src: fixSrc(p.src), alt: p.alt, w: p.w, h: p.h })));
 ---
-<div class={`fe-album n${n}`} style={`--ratio:${e.photos[0].w}/${e.photos[0].h}`} role="group" aria-label={name} data-photos={data}>{e.photos.map((p: any, i: number) => <button type="button" class="fe-photo" data-album={e.id} data-index={i} aria-label={label(i + 1, p.alt)}><Img p={p} /></button>)}</div>
+{n > 0 && <div class={`fe-album n${n}`} style={`--ratio:${e.photos[0].w}/${e.photos[0].h}`} role="group" aria-label={name} data-photos={data}>{e.photos.map((p: any, i: number) => <button type="button" class="fe-photo" data-album={e.id} data-index={i} aria-label={label(i + 1, p.alt)}><Img p={p} /></button>)}</div>}

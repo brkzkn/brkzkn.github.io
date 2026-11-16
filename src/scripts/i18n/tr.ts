@@ -49,3 +49,5 @@ export default translations;
 
 // 2026-11-10: home hero intro (variant B chosen by the owner).
 Object.assign(translations,{"Burak Özkan · Engineering Leader · Technical Architect · Builder":"Burak Özkan · Engineering Leader · Technical Architect · Maker","I design software systems, lead engineering teams, and love bringing my ideas and curiosities to life. This is my little corner of the internet, where I share what I build, what I learn, and little moments from my life.":"Yazılım sistemleri tasarlıyor, ekiplere liderlik ediyor ve merak ettiğim şeyleri hayata geçirmeyi seviyorum. Burası da yaptıklarımı, öğrendiklerimi ve hayatımdan küçük anları paylaştığım kendi köşem."});
+// 2026-11-15: sample markers for review subjects the home feed had no wording for (series, exhibition, concert)
+Object.assign(translations,{'Fictional series, sample content.':'Kurgu dizi, örnek içerik.','Fictional exhibition, sample content.':'Kurgu sergi, örnek içerik.','Fictional concert, sample content.':'Kurgu konser, örnek içerik.'});

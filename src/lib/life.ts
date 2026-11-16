@@ -8,7 +8,7 @@
 // A `type: restaurant` post is normally `category: restaurant`, but neither implies the other: a note about a
 // dinner can be filed under restaurant, and nothing here looks at the type to decide a category.
 import type { ImageMetadata } from 'astro';
-import { getPosts, postSlug, postUrl, postFileLang, type Post } from './posts';
+import { getPosts, postSlug, postFileLang, type Post } from './posts';
 import { parseBody, isoMonth, isoDay } from './life-body';
 import { plainText } from './feed';
 import { packRow, rowOf, type LifeFamily, type LifeSpan } from './life-layout';
@@ -55,7 +55,8 @@ export interface LifeEntry {
   textLang?: LifeLang; // language of the text shown (the file's language). Unknown -> no language chip, no lang attribute
   title?: string; // notes and albums may have none
   text: string;
-  href?: string; // only when a real page exists
+  href?: string; // a detail page (trip, restaurant, monthly) or the post's own `link`; otherwise the card has no link
+  external?: boolean; // the link leaves the site: new tab, outward arrow, `cta` is the hostname
   cta?: string;
   tag: string;
   warm: boolean; // milestone: the one warm tag
@@ -102,7 +103,8 @@ export function lifeCopy(lang: LifeLang) {
         milestone: 'Özel an', diary: 'Kültür günlüğü',
         days: (n: number) => `${n} gün`, photos: (n: number) => `${n} fotoğraf`,
         rated: (r: string) => `5 üzerinden ${r} puan`,
-        cta: { trip: 'Rehberi oku', restaurant: 'Detaylar', monthly: 'Günlüğü aç', note: 'Notu oku' },
+        cta: { trip: 'Rehberi oku', restaurant: 'Detaylar', monthly: 'Günlüğü aç', page: 'Sayfayı aç' },
+        newTab: 'yeni sekmede açılır',
         subject: (s: string) => SUBJECTS_TR[s] ?? s,
       }
     : {
@@ -120,7 +122,8 @@ export function lifeCopy(lang: LifeLang) {
         milestone: 'Milestone', diary: 'Culture diary',
         days: (n: number) => `${n} day${n === 1 ? '' : 's'}`, photos: (n: number) => `${n} photo${n === 1 ? '' : 's'}`,
         rated: (r: string) => `Rated ${r} out of 5`,
-        cta: { trip: 'Read the guide', restaurant: 'Details', monthly: 'Open the diary', note: 'Read the note' },
+        cta: { trip: 'Read the guide', restaurant: 'Details', monthly: 'Open the diary', page: 'Open the page' },
+        newTab: 'opens in a new tab',
         subject: (s: string) => s,
       };
 }
@@ -128,6 +131,23 @@ export type LifeCopy = ReturnType<typeof lifeCopy>;
 
 // Placeholder tint per type (sample imagery only; a real photo replaces the block).
 const PH_HUE: Record<LifeType, string> = { trip: 'deep', milestone: 'sage', restaurant: 'warm', monthly: 'plum', album: 'sand', review: 'sand', note: 'sage' };
+
+/**
+ * The `link` field of a post as a card link. "https://..." (or http) leaves the site and is labelled with its hostname
+ * without "www."; "/route/" is a page of this site. Anything else (empty, relative, another scheme, a URL that does not
+ * parse) is not a link: the card stays unlinked instead of pointing somewhere broken.
+ */
+export function lifeLink(link: string | undefined): { href: string; external: boolean; host?: string } | undefined {
+  if (!link) return undefined;
+  if (/^https?:\/\//i.test(link)) {
+    try {
+      return { href: link, external: true, host: new URL(link).hostname.replace(/^www\./, '') };
+    } catch {
+      return undefined;
+    }
+  }
+  return link.startsWith('/') && !link.startsWith('//') ? { href: link, external: false } : undefined;
+}
 
 /** One post -> one card. Returns null for posts that do not belong on the Life page. */
 export function toLifeEntry(p: Post, lang: LifeLang): LifeEntry | null {
@@ -151,14 +171,23 @@ export function toLifeEntry(p: Post, lang: LifeLang): LifeEntry | null {
       ? { kind: 'ph', cap: d.alt[0], hue: PH_HUE[type] }
       : undefined;
 
-  // Detail routes are the existing ones; an entry without a page of its own gets no link at all.
+  // Which cards link (owner decision, 2026-11-16; ADR-007 amendment). Trip, restaurant and monthly have a detail page
+  // on Life and go there. Note, album, review and milestone have none: the card links only when the post sets `link`,
+  // outward or to a page of this site, and has no link otherwise. Life never links to /notes/<slug>/ (Home and RSS do),
+  // and a sample entry follows the same rule as a real one.
+  const own = type === 'monthly' || type === 'trip' || type === 'restaurant' ? undefined : lifeLink(d.link);
   const href =
     type === 'monthly' ? `/life/culture/${isoMonth(d.date)}/`
     : type === 'trip' ? `/life/trips/${slug}/`
     : type === 'restaurant' ? `/life/restaurants/${slug}/`
-    : d.sample ? undefined // sample notes have no page of their own yet
-    : postUrl(p);
-  const cta = !href ? undefined : type === 'trip' ? c.cta.trip : type === 'restaurant' ? c.cta.restaurant : type === 'monthly' ? c.cta.monthly : c.cta.note;
+    : own?.href;
+  const cta =
+    type === 'trip' ? c.cta.trip
+    : type === 'restaurant' ? c.cta.restaurant
+    : type === 'monthly' ? c.cta.monthly
+    : own?.external ? own.host
+    : own ? c.cta.page
+    : undefined;
 
   // The card shows the date the timeline sorts by. A restaurant's visit date stays on its detail page.
   const dateText = type === 'monthly' ? monthLabel(isoMonth(d.date), lang).long : type === 'trip' && d.dates ? d.dates : dayLabel(d.date, lang);
@@ -182,7 +211,7 @@ export function toLifeEntry(p: Post, lang: LifeLang): LifeEntry | null {
     textLang: postFileLang(p),
     title: type === 'restaurant' ? d.name ?? d.title : type === 'trip' ? d.title ?? d.destination : d.title,
     text: plainText(body.sections.get('Summary')?.before[0] ?? body.lede),
-    href, cta,
+    href, external: own?.external || undefined, cta,
     tag: type === 'milestone' ? c.milestone : LIFE_CATEGORIES.find((x) => x.id === category)!.tag[lang],
     warm: type === 'milestone',
     kind, facts,
@@ -214,4 +243,23 @@ export function groupByMonth(entries: LifeEntry[], lang: LifeLang): LifeMonth[] 
   }
   for (const g of groups) packRow(g.cards.map((x) => rowOf(x.e.family, x.e.media))).forEach((span, i) => (g.cards[i].span = span));
   return groups;
+}
+
+export interface LifeYear { year: string; count: number; months: LifeMonth[] }
+
+/**
+ * Month groups (newest first) -> year groups, newest first, each with its number of entries. The first group is the year
+ * of the newest entry, not the calendar year: the site is static, so "this year" is whatever the latest entry says.
+ * The timeline draws that first year open and every older one as a closed <details> (ADR-007, 2026-11-16 amendment).
+ */
+export function groupByYear(months: LifeMonth[]): LifeYear[] {
+  const years: LifeYear[] = [];
+  for (const m of months) {
+    const year = m.month.slice(0, 4);
+    let y = years.at(-1);
+    if (!y || y.year !== year) years.push((y = { year, count: 0, months: [] }));
+    y.months.push(m);
+    y.count += m.cards.length;
+  }
+  return years;
 }
